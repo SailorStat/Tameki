@@ -19,6 +19,7 @@
     "useUnknownInCatchVariables": false,
     "baseUrl": "./",
     "paths": {
+      "@localization": ["./src/localization"],
       "@router": ["./src/router"],
       "@router/*": ["./src/router/*"],
       "@tips": ["./src/errors/tips"],
@@ -26,7 +27,8 @@
       "@pages/*": ["./src/pages/*"],
       "@components/*": ["./src/components/*"],
       "@ui/*": ["./src/ui/*"],
-      "@store/*": ["./src/store/*"],
+      "@slices/*": ["src/store/slices/*"],
+      "@store": ["./src/store"],
       "@utils/*": ["./src/utils/*"],
       "@src/*": ["./src/*"],
     }

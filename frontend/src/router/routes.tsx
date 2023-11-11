@@ -8,13 +8,22 @@ import PATHS from "./Paths";
 
 const LayoutWithNavigation = React.lazy(async () => import("../layouts/LayoutWithNavigation"));
 
+const Greet = React.lazy(async () => import("../pages/Greet"));
+
 const ROUTES: RouteObject[] = [
   {
     element: <Navigate to={PATHS.base} />,
     path: "/",
   },
   {
-    children: NAVIGATION_ROUTES,
+    children: [
+      {
+        element: <Greet />,
+        id: "greet",
+        path: PATHS.base,
+      },
+      ...NAVIGATION_ROUTES,
+    ],
     element: <LayoutWithNavigation />,
     path: PATHS.base,
   },
