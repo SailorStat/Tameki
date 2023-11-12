@@ -1,17 +1,15 @@
 import localization from "@localization";
-import { Button, Stack, Typography, useTheme } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import { Paths } from "@router";
 import { useNavigate } from "react-router-dom";
 
 const Greet = () => {
   const navigate = useNavigate();
 
-  const handleStartShopping = () => navigate(Paths.example);
-
-  console.log(useTheme());
+  const handleStartShopping = () => navigate(Paths.shop);
 
   return (
-    <Stack minWidth={(theme) => `calc(100vh - ${theme.components?.MuiAppBar?.width})`} textAlign="center" width="100%">
+    <Stack alignItems="center" height="100%" justifyContent="center" textAlign="center" width="100vw">
       <Typography variant="h2">{localization.welcome}</Typography>
       {/* todo: need change to loaded name */}
       <Typography variant="h1">{"Tameki"}</Typography>

@@ -1,6 +1,6 @@
 const PATHS = {
   base: "/tameki",
-  example: "/tameki/example",
+  shop: "/tameki/shop",
 };
 
 export default PATHS;

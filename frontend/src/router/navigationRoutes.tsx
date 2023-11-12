@@ -3,13 +3,13 @@ import { RouteObject } from "react-router-dom";
 
 import PATHS from "./Paths";
 
-const Example = React.lazy(async () => import("../pages/Example"));
+const Shop = React.lazy(async () => import("../pages/Shop"));
 
 const NAVIGATION_ROUTES: RouteObject[] = [
   {
-    element: <Example />,
-    id: "Example",
-    path: PATHS.example,
+    element: <Shop />,
+    id: "Shop",
+    path: PATHS.shop,
   },
 ];
 
