@@ -33,7 +33,7 @@
       "@src/*": ["./src/*"],
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/additional.d.ts", "src/**/*"],
   "references": [
     {
       "path": "./tsconfig.node.json"
