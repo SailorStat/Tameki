@@ -4,13 +4,16 @@ import { styled, Theme } from "@mui/material";
 const iconStyles = ({ theme }: { theme: Theme }) => ({
   color: theme.palette.primary.main,
   opacity: 0.3,
-  transition: "opacity 200ms cubic-bezier(1, 0.02, 0.72, 1.01) 0ms",
-
-  "&:hover": {
-    opacity: 1,
-  },
+  padding: "0 1vw",
+  transition: "opacity 200ms linear",
 });
+
+const defaultProps = { fontSize: "large" } as const;
 
 export const PrevSlideIcon = styled(ArrowBackIosNewIcon)(iconStyles);
 
+PrevSlideIcon.defaultProps = defaultProps;
+
 export const NextSlideIcon = styled(ArrowForwardIosIcon)(iconStyles);
+
+NextSlideIcon.defaultProps = defaultProps;

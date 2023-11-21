@@ -88,12 +88,6 @@ module.exports = {
       },
     ],
     curly: "error",
-    "no-console": [
-      "error",
-      {
-        allow: ["warn", "error"],
-      },
-    ],
     "no-debugger": "error",
     "arrow-body-style": ["error", "as-needed"],
     "curly": ["error", "all"],
@@ -128,12 +122,6 @@ module.exports = {
       {
         selector: ["typeLike", "enumMember"],
         format: ["PascalCase"],
-      },
-      {
-        selector: ["variable"],
-        format: ["UPPER_CASE"],
-        types: ["array", "boolean", "number", "string"],
-        modifiers: ["const", "global"]
       },
       {
         selector: ["variable"],

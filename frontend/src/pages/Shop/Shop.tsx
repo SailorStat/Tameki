@@ -1,11 +1,13 @@
-import CarouselOffer from "@components/CarouselOffer";
+import CarouselAdvertisement from "@components/CarouselAdvertisement";
 import localization from "@localization";
-import { Container, Typography } from "@mui/material";
+import { Container, Stack, Typography } from "@mui/material";
 
 const Shop = () => (
-  <Container maxWidth={false}>
-    <Typography variant="h4">{localization.shop}</Typography>
-    <CarouselOffer />
+  <Container fixed>
+    <Stack gap={2} paddingTop={1}>
+      <Typography variant="h4">{localization.shop}</Typography>
+      <CarouselAdvertisement />
+    </Stack>
   </Container>
 );
 
