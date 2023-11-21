@@ -89,7 +89,7 @@ module.exports = {
     ],
     curly: "error",
     "no-debugger": "error",
-    "arrow-body-style": ["error", "as-needed"],
+    "arrow-body-style": ["warn", "as-needed"],
     "curly": ["error", "all"],
     "eqeqeq": ["error", "always"],
     "logical-assignment-operators": ["error", "always", { enforceForIfStatements: true }],

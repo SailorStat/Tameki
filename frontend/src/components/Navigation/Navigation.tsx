@@ -9,7 +9,7 @@ const Navigation = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Stack direction="row" gap={1}>
+        <Stack direction="row" spacing={1}>
           <IconButton color="inherit">
             <ShopIcon />
           </IconButton>
