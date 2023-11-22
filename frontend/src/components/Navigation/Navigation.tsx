@@ -7,7 +7,7 @@ const Navigation = () => {
   const navigate = useNavigate();
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Toolbar>
         <Stack direction="row" spacing={1}>
           <IconButton color="inherit">

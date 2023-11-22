@@ -29,7 +29,10 @@
       "@ui/*": ["./src/ui/*"],
       "@slices/*": ["src/store/slices/*"],
       "@store": ["./src/store"],
+      "@utils": ["./src/utils"],
       "@utils/*": ["./src/utils/*"],
+      "@hooks": ["./src/hooks"],
+      "@hooks/*": ["./src/hooks/*"],
       "@src/*": ["./src/*"],
     }
   },
