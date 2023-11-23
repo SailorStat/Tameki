@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { Product } from "../../types";
 import { Descriptions, Images, Titles } from "./placeholders";
-import { Product } from "./types";
 
 const productsSlice = createSlice({
   initialState: [
@@ -12,6 +12,7 @@ const productsSlice = createSlice({
       favorites: false,
       id: "1",
       images: [Images.WindForest],
+      inStock: 12,
       price: 500,
       reviews: 200,
       soldTimes: 12,
@@ -24,6 +25,7 @@ const productsSlice = createSlice({
       favorites: false,
       id: "2",
       images: [Images.Taxi],
+      inStock: 12,
       price: 350,
       reviews: 200,
       soldTimes: 13,
@@ -36,6 +38,7 @@ const productsSlice = createSlice({
       favorites: false,
       id: "3",
       images: [Images.AutumnPantsuit],
+      inStock: 12,
       price: 1800,
       reviews: 200,
       soldTimes: 45,
@@ -48,6 +51,7 @@ const productsSlice = createSlice({
       favorites: true,
       id: "4",
       images: [Images.AsphaltAndConcrete],
+      inStock: 12,
       price: 3600,
       reviews: 200,
       soldTimes: 1,
@@ -60,6 +64,7 @@ const productsSlice = createSlice({
       favorites: false,
       id: "5",
       images: [Images.HelicopterTour],
+      inStock: 12,
       price: 10_000,
       reviews: 200,
       soldTimes: 15,
@@ -72,6 +77,7 @@ const productsSlice = createSlice({
       favorites: false,
       id: "6",
       images: [Images.StainedGlass],
+      inStock: 12,
       price: 2300,
       reviews: 200,
       soldTimes: 125,
@@ -84,6 +90,7 @@ const productsSlice = createSlice({
       favorites: true,
       id: "7",
       images: [Images.CreatingAdvertisingPosters],
+      inStock: 12,
       price: 240,
       reviews: 200,
       soldTimes: 5,
@@ -96,6 +103,7 @@ const productsSlice = createSlice({
       favorites: true,
       id: "8",
       images: [Images.WeddingSalon],
+      inStock: 12,
       price: 14_750,
       reviews: 200,
       soldTimes: 18,

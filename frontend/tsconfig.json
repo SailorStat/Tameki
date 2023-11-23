@@ -27,7 +27,7 @@
       "@pages/*": ["./src/pages/*"],
       "@components/*": ["./src/components/*"],
       "@ui/*": ["./src/ui/*"],
-      "@slices/*": ["src/store/slices/*"],
+      "@slices/*": ["./src/store/slices/*"],
       "@store": ["./src/store"],
       "@utils": ["./src/utils"],
       "@utils/*": ["./src/utils/*"],

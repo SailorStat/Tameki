@@ -1,6 +1,6 @@
-.slider-control-centerleft,
-.slider-control-centerright {
-    height: 100%;
+.slider-control-centerleft button,
+.slider-control-centerright button {
+    background: none !important;
 }
 
 .slider-control-centerleft:hover .MuiSvgIcon-root,

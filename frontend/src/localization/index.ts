@@ -1,7 +1,7 @@
 const localization = {
   shop: "Магазин",
   startShopping: "Начать покупки",
-  toShoppingBasket: "В корзину",
+  toShoppingList: "В корзину",
   welcome: "Добро пожаловать в магазин",
 };
 

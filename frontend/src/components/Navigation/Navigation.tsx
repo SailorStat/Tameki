@@ -3,6 +3,8 @@ import { AppBar, Button, IconButton, Stack, Toolbar } from "@mui/material";
 import { NAVIGATION_ROUTES } from "@router";
 import { useNavigate } from "react-router-dom";
 
+import ShoppingListTrigger from "./ShoppingListTrigger";
+
 const Navigation = () => {
   const navigate = useNavigate();
 
@@ -24,6 +26,10 @@ const Navigation = () => {
               {id}
             </Button>
           ))}
+        </Stack>
+        <div style={{ flex: 1 }} />
+        <Stack direction="row" spacing={1}>
+          <ShoppingListTrigger />
         </Stack>
       </Toolbar>
     </AppBar>

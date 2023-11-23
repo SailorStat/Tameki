@@ -89,7 +89,6 @@ module.exports = {
     ],
     curly: "error",
     "no-debugger": "error",
-    "arrow-body-style": ["warn", "as-needed"],
     "curly": ["error", "all"],
     "eqeqeq": ["error", "always"],
     "logical-assignment-operators": ["error", "always", { enforceForIfStatements: true }],
@@ -194,7 +193,6 @@ module.exports = {
     "react/self-closing-comp": "error",
     "react/function-component-definition": ["error", { "namedComponents": "arrow-function", "unnamedComponents": "arrow-function" }],
     "react/jsx-curly-brace-presence": ["error", { props: "never", children: "always" }],
-    "react/jsx-no-leaked-render": ["error", { "validStrategies": ["coerce"] }],
     "react/jsx-no-useless-fragment": "error",
     // sorting
     "sort-keys-plus/sort-keys": [
