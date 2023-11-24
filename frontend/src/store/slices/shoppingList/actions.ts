@@ -7,3 +7,5 @@ export const changeProductCountFromShoppingList = shoppingListSlice.actions.chan
 export const hideProductFromShoppingList = shoppingListSlice.actions.hideProduct;
 
 export const removeProductFromShoppingList = shoppingListSlice.actions.removeProduct;
+
+export const toggleProductToOrderFromShoppingList = shoppingListSlice.actions.toggleProductToOrder;

@@ -20,6 +20,7 @@
     "baseUrl": "./",
     "paths": {
       "@localization": ["./src/localization"],
+      "@layouts/*": ["./src/layouts/*"],
       "@router": ["./src/router"],
       "@router/*": ["./src/router/*"],
       "@tips": ["./src/errors/tips"],

@@ -1,16 +1,11 @@
-import CarouselAdvertisement from "@components/CarouselAdvertisement";
 import ProductTiles from "@components/ProductTiles";
 import localization from "@localization";
-import { Container, Stack, Typography } from "@mui/material";
+import LayoutWithMenuTitleCarousel from "@src/layouts/LayoutWithMenuTitleCarousel";
 
 const Shop = () => (
-  <Container fixed>
-    <Stack paddingTop={1} spacing={2}>
-      <Typography variant="h4">{localization.shop}</Typography>
-      <CarouselAdvertisement />
-      <ProductTiles />
-    </Stack>
-  </Container>
+  <LayoutWithMenuTitleCarousel title={localization.shop}>
+    <ProductTiles />
+  </LayoutWithMenuTitleCarousel>
 );
 
 export default Shop;

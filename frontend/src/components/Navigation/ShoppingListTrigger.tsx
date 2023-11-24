@@ -1,14 +1,17 @@
 import { useSelector } from "@hooks";
 import { ShoppingBasketOutlined as ShoppingBasketOutlinedIcon } from "@mui/icons-material";
 import { Badge, IconButton } from "@mui/material";
-import { productsInShoppingListSelector } from "@slices/shoppingList";
+import Paths from "@router/Paths";
+import { shoppingListLengthSelector } from "@slices/shoppingList";
+import { useNavigate } from "react-router-dom";
 
 const ShoppingListTrigger = () => {
-  const productsInShoppingList = useSelector(productsInShoppingListSelector);
+  const shoppingListLength = useSelector(shoppingListLengthSelector);
+  const navigate = useNavigate();
 
   return (
-    <IconButton color="inherit">
-      <Badge badgeContent={productsInShoppingList} color="warning">
+    <IconButton color="inherit" onClick={() => navigate(Paths.shoppingList())}>
+      <Badge badgeContent={shoppingListLength} color="warning">
         <ShoppingBasketOutlinedIcon />
       </Badge>
     </IconButton>

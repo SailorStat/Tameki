@@ -1,6 +1,7 @@
-const PATHS = {
-  base: "/tameki",
-  shop: "/tameki/shop",
+const Paths = {
+  base: () => "/tameki",
+  shop: () => `${Paths.base()}/shop`,
+  shoppingList: () => `${Paths.base()}/shoppingList`,
 };
 
-export default PATHS;
+export default Paths;
