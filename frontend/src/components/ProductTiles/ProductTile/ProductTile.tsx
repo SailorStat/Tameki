@@ -9,7 +9,7 @@ import {
 } from "@mui/icons-material";
 import { Button, capitalize, CardActions, CardContent, CardMedia, Stack, Typography } from "@mui/material";
 import { toggleFavoriteProduct } from "@slices/products";
-import { addProductToShoppingList } from "@slices/shoppingList";
+import { shoppingListActions } from "@slices/shoppingList";
 import { Product } from "@store";
 import { formatPrice } from "@utils";
 
@@ -25,7 +25,7 @@ const ProductTile = ({ product }: ProductTileProps) => {
   const dispatch = useDispatch();
 
   const handleAddProductToShoppingList = React.useCallback(() => {
-    dispatch(addProductToShoppingList({ product }));
+    dispatch(shoppingListActions.addProduct({ product }));
   }, [dispatch, product]);
 
   const handleFavoritesToggle = React.useCallback(
@@ -42,7 +42,7 @@ const ProductTile = ({ product }: ProductTileProps) => {
       <CardMedia alt={title} component="img" height="194" image={images[0]} />
       <CardContent sx={{ display: "grid", gridTemplateRows: "max-content 1fr max-content" }}>
         <div>
-          <Typography>{`${formatPrice(price)} ₽`}</Typography>
+          <Typography>{formatPrice(price)}</Typography>
           <ProductTileCardHeader fontWeight="bold" variant="body1">
             {title}
           </ProductTileCardHeader>

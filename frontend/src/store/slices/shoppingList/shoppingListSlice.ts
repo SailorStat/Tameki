@@ -37,11 +37,8 @@ const shoppingListSlice = createSlice({
         state.productsSelectedCollection[product.id] = 1;
       }
     },
-    changeProductCount: (state, { payload: { id, count } }: PayloadAction<{ count: number; id: Product["id"] }>) => {
-      state.productsSelectedCollection[id] = count;
-      state.productIdToOrderCollection[id] = !!count;
-    },
-    hideProduct: (state, { payload: productId }: PayloadAction<Product["id"]>) => {
+
+    hideProduct: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
       state.hiddenProductIds.push(productId);
     },
     removeProduct: (state, { payload: { product } }: PayloadAction<{ product: Product }>) => {
@@ -53,10 +50,31 @@ const shoppingListSlice = createSlice({
         state.hiddenProductIds = state.hiddenProductIds.filter((id) => id === product.id);
       }
     },
-    toggleProductToOrder: (state, { payload: { id } }: PayloadAction<{ id: Product["id"] }>) => {
-      state.productIdToOrderCollection[id] = !state.productIdToOrderCollection[id];
+
+    changeProductCount: (
+      state,
+      { payload: { productId, count } }: PayloadAction<{ count: number; productId: Product["id"] }>
+    ) => {
+      state.productsSelectedCollection[productId] = count;
+      state.productIdToOrderCollection[productId] = !!count;
+    },
+    decrementProductCount: (state, { payload: { id } }: PayloadAction<{ id: Product["id"] }>) => {
+      state.productsSelectedCollection[id] -= 1;
+      state.productIdToOrderCollection[id] = !!state.productsSelectedCollection[id];
+    },
+    incrementProductCount: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
+      state.productsSelectedCollection[productId] += 1;
+      state.productIdToOrderCollection[productId] = true;
+    },
+
+    toggleProductToOrder: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
+      state.productIdToOrderCollection[productId] = !state.productIdToOrderCollection[productId];
     },
   },
 });
 
 export default shoppingListSlice;
+
+const { actions: shoppingListActions } = shoppingListSlice;
+
+export { shoppingListActions };

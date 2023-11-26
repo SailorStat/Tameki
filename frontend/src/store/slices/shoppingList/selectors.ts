@@ -11,7 +11,7 @@ const shoppingListHiddenProductIdsSelector = (state: RootState) => state.shoppin
 
 const shoppingListProductIdsToOrderSelector = (state: RootState) => state.shoppingList.productIdToOrderCollection;
 
-const selectProductId = (state: RootState, productId: Product["id"]) => productId;
+// const selectProductId = (state: RootState, productId: Product["id"]) => productId;
 
 const shoppingListLengthSelector = createSelector(
   [shoppingListProductsSelectedCollectionSelector],
@@ -19,20 +19,17 @@ const shoppingListLengthSelector = createSelector(
     reduce(productsSelectedCollection, (AllSelectedCount, selectedCount) => (AllSelectedCount += selectedCount), 0)
 );
 
-const shoppingListProductSelectedSelector = createSelector(
-  [shoppingListProductsSelectedCollectionSelector, selectProductId],
-  (productsSelectedCollection, productId) => productsSelectedCollection[productId]
-);
+const shoppingListProductSelectedSelector = (productId: Product["id"]) =>
+  createSelector(
+    [shoppingListProductsSelectedCollectionSelector],
+    (productsSelectedCollection) => productsSelectedCollection[productId]
+  );
 
-const shoppingListIsHiddenProductSelector = createSelector(
-  [shoppingListHiddenProductIdsSelector, selectProductId],
-  (hiddenProductIds, productId) => hiddenProductIds.includes(productId)
-);
+const shoppingListIsHiddenProductSelector = (productId: Product["id"]) =>
+  createSelector([shoppingListHiddenProductIdsSelector], (hiddenProductIds) => hiddenProductIds.includes(productId));
 
-const shoppingListIsOrderedProductSelector = createSelector(
-  [shoppingListProductIdsToOrderSelector, selectProductId],
-  (productIdsToOrder, productId) => productIdsToOrder[productId]
-);
+const shoppingListIsOrderedProductSelector = (productId: Product["id"]) =>
+  createSelector([shoppingListProductIdsToOrderSelector], (productIdsToOrder) => productIdsToOrder[productId]);
 
 export {
   shoppingListProductsSelector,
