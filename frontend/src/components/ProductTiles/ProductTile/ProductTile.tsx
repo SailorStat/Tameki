@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "@hooks";
 import localization from "@localization";
 import {
   ForumOutlined as ForumOutlinedIcon,
@@ -8,8 +7,8 @@ import {
   ShoppingCartOutlined as ShoppingCartOutlinedIcon,
 } from "@mui/icons-material";
 import { Button, capitalize, CardActions, CardContent, CardMedia, Stack, Typography } from "@mui/material";
-import { toggleFavoriteProduct } from "@slices/products";
-import { shoppingListActions } from "@slices/shoppingList";
+import { dispatchedProductActions } from "@slices/products/actions";
+import { useDispatchedShoppingListActions } from "@slices/shoppingList/actions";
 import { Product } from "@store";
 import { formatPrice } from "@utils";
 
@@ -21,21 +20,18 @@ interface ProductTileProps {
 }
 
 const ProductTile = ({ product }: ProductTileProps) => {
+  const { addProduct } = useDispatchedShoppingListActions();
   const { id, title, images, favorites, estimation, soldTimes, reviews, description, price } = product;
-  const dispatch = useDispatch();
 
   const handleAddProductToShoppingList = React.useCallback(() => {
-    dispatch(shoppingListActions.addProduct({ product }));
-  }, [dispatch, product]);
+    addProduct({ product });
+  }, [addProduct, product]);
 
-  const handleFavoritesToggle = React.useCallback(
-    ({ target }: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      if ("id" in target && typeof target.id === "string") {
-        dispatch(toggleFavoriteProduct({ id: target.id }));
-      }
-    },
-    [dispatch]
-  );
+  const handleFavoritesToggle = React.useCallback(({ target }: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if ("id" in target && typeof target.id === "string") {
+      dispatchedProductActions.toggleFavorite({ id: target.id });
+    }
+  }, []);
 
   return (
     <ProductTileCard key={id}>

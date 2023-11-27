@@ -58,9 +58,9 @@ const shoppingListSlice = createSlice({
       state.productsSelectedCollection[productId] = count;
       state.productIdToOrderCollection[productId] = !!count;
     },
-    decrementProductCount: (state, { payload: { id } }: PayloadAction<{ id: Product["id"] }>) => {
-      state.productsSelectedCollection[id] -= 1;
-      state.productIdToOrderCollection[id] = !!state.productsSelectedCollection[id];
+    decrementProductCount: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
+      state.productsSelectedCollection[productId] -= 1;
+      state.productIdToOrderCollection[productId] = !!state.productsSelectedCollection[productId];
     },
     incrementProductCount: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
       state.productsSelectedCollection[productId] += 1;
@@ -74,7 +74,3 @@ const shoppingListSlice = createSlice({
 });
 
 export default shoppingListSlice;
-
-const { actions: shoppingListActions } = shoppingListSlice;
-
-export { shoppingListActions };

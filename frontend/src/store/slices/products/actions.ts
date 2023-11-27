@@ -1,3 +1,7 @@
-import counterSlice from "./productsSlice";
+import { getDispatchedActions } from "@utils";
 
-export const toggleFavoriteProduct = counterSlice.actions.toggleFavorite;
+import productsSlice from "./productsSlice";
+
+const dispatchedProductActions = getDispatchedActions(productsSlice.actions);
+
+export { dispatchedProductActions };

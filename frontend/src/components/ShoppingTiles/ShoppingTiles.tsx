@@ -8,8 +8,6 @@ import ShoppingTile from "./ShoppingTile";
 const ShoppingTiles = () => {
   const shoppingListProducts = useSelector(shoppingListProductsSelector);
 
-  console.log(shoppingListProducts);
-
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="end">
