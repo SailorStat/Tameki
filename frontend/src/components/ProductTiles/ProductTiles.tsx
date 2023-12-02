@@ -1,11 +1,11 @@
 import { useSelector } from "@hooks";
 import { Stack } from "@mui/material";
-import { productsSelector } from "@slices/products";
+import { productCollectionSelector } from "@slices/products";
 
 import ProductTile from "./ProductTile";
 
 const ProductTiles = () => {
-  const products = useSelector(productsSelector);
+  const products = useSelector(productCollectionSelector);
 
   return (
     <Stack
@@ -20,7 +20,7 @@ const ProductTiles = () => {
         xs: "repeat(2, 1fr)",
       }}
     >
-      {products.map((product) => (
+      {Object.values(products).map((product) => (
         <ProductTile key={product.id} product={product} />
       ))}
     </Stack>

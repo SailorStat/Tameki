@@ -2,36 +2,39 @@ import React from "react";
 import { useSelector } from "@hooks";
 import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
 import { Button, CardContent, Typography } from "@mui/material";
+import { productSelector } from "@slices/products";
 import { shoppingListProductSelectedSelector } from "@slices/shoppingList";
-import { useDispatchedShoppingListActions } from "@slices/shoppingList/actions";
+import { dispatchedShoppingListActions } from "@slices/shoppingList/actions";
 import { Product } from "@store";
 import { formatPrice } from "@utils";
 
 import { TextFieldCounter } from "./ShoppingProductCounter.styles";
 
 interface ShoppingProductCounterProps {
-  product: Product;
+  productId: Product["id"];
 }
 
-const ShoppingProductCounter = ({ product }: ShoppingProductCounterProps) => {
-  const { price, id, inStock } = product;
-  const productSelectedCount = useSelector((state) => shoppingListProductSelectedSelector(state, id));
-  const { changeProductCount, incrementProductCount, decrementProductCount } = useDispatchedShoppingListActions();
+const ShoppingProductCounter = ({ productId }: ShoppingProductCounterProps) => {
+  const { inStock, price } = useSelector((state) => productSelector(state, productId));
+  const productSelectedCount = useSelector((state) => shoppingListProductSelectedSelector(state, productId));
 
   const handleDecrementProductToShoppingList = React.useCallback(() => {
-    decrementProductCount({ productId: id });
-  }, [id, decrementProductCount]);
+    dispatchedShoppingListActions.decrementProductCount({ productId });
+  }, [productId]);
 
   const handleChangeProductToShoppingList = React.useCallback(
     ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      changeProductCount({ count: Math.round(Math.min(Math.max(+target.value, 0), inStock)), productId: id });
+      dispatchedShoppingListActions.changeProductCount({
+        count: Math.round(Math.min(Math.max(+target.value, 0), inStock)),
+        productId,
+      });
     },
-    [changeProductCount, inStock, id]
+    [inStock, productId]
   );
 
   const handleIncrementProductToShoppingList = React.useCallback(() => {
-    incrementProductCount({ productId: id });
-  }, [id, incrementProductCount]);
+    dispatchedShoppingListActions.incrementProductCount({ productId });
+  }, [productId]);
 
   return (
     <CardContent>
@@ -39,11 +42,21 @@ const ShoppingProductCounter = ({ product }: ShoppingProductCounterProps) => {
         {formatPrice(price * (productSelectedCount || 1))}
       </Typography>
       <div style={{ display: "grid", gridTemplateColumns: "48px 1fr 48px" }}>
-        <Button sx={{ minWidth: 30 }} variant="contained" onClick={handleDecrementProductToShoppingList}>
+        <Button
+          disabled={!productSelectedCount}
+          sx={{ minWidth: 30 }}
+          variant="contained"
+          onClick={handleDecrementProductToShoppingList}
+        >
           <RemoveIcon />
         </Button>
         <TextFieldCounter value={productSelectedCount} onChange={handleChangeProductToShoppingList} />
-        <Button sx={{ minWidth: 30 }} variant="contained" onClick={handleIncrementProductToShoppingList}>
+        <Button
+          disabled={productSelectedCount === inStock}
+          sx={{ minWidth: 30 }}
+          variant="contained"
+          onClick={handleIncrementProductToShoppingList}
+        >
           <AddIcon />
         </Button>
       </div>

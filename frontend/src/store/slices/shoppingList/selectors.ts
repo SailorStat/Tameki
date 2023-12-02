@@ -1,32 +1,35 @@
 import { createSelector } from "@reduxjs/toolkit";
+import { productCollectionSelector } from "@slices/products";
 import { Product, RootState } from "@src/store";
 import { reduce } from "lodash";
 
-const shoppingListProductsSelector = (state: RootState) => state.shoppingList.products;
+const shoppingListProductIdsSelector = (state: RootState) => state.shoppingList.shopListProductIds;
 
 const shoppingListProductsSelectedCollectionSelector = (state: RootState) =>
   state.shoppingList.productsSelectedCollection;
 
-const shoppingListHiddenProductIdsSelector = (state: RootState) => state.shoppingList.hiddenProductIds;
+const shoppingListProductToRemoveSelector = (state: RootState) => state.shoppingList.productToRemove;
 
 const shoppingListProductIdsToOrderSelector = (state: RootState) => state.shoppingList.productIdToOrderCollection;
 
 const selectProductId = (_: RootState, productId: Product["id"]) => productId;
 
-const shoppingListLengthSelector = createSelector(
+const shoppingListProductsSelector = createSelector(
+  [productCollectionSelector, shoppingListProductIdsSelector],
+  (productCollection, shoppingListProductIds) => shoppingListProductIds.map((productId) => productCollection[productId])
+);
+
+const shoppingListProductsCountSelector = createSelector(
   [shoppingListProductsSelectedCollectionSelector],
   (productsSelectedCollection) =>
     reduce(productsSelectedCollection, (allSelectedCount, selectedCount) => allSelectedCount + selectedCount, 0)
 );
 
+const shoppingListLengthSelector = createSelector([shoppingListProductIdsSelector], (productIds) => productIds.length);
+
 const shoppingListProductSelectedSelector = createSelector(
   [shoppingListProductsSelectedCollectionSelector, selectProductId],
   (productsSelectedCollection, productId) => productsSelectedCollection[productId] ?? 0
-);
-
-const shoppingListIsHiddenProductSelector = createSelector(
-  [shoppingListHiddenProductIdsSelector, selectProductId],
-  (hiddenProductIds, productId) => hiddenProductIds.includes(productId)
 );
 
 const shoppingListIsOrderedProductSelector = createSelector(
@@ -35,11 +38,13 @@ const shoppingListIsOrderedProductSelector = createSelector(
 );
 
 export {
-  shoppingListProductsSelector,
+  shoppingListProductIdsSelector,
   shoppingListProductsSelectedCollectionSelector,
   shoppingListProductIdsToOrderSelector,
+  shoppingListProductToRemoveSelector,
+  shoppingListProductsSelector,
   shoppingListIsOrderedProductSelector,
   shoppingListLengthSelector,
-  shoppingListIsHiddenProductSelector,
+  shoppingListProductsCountSelector,
   shoppingListProductSelectedSelector,
 };

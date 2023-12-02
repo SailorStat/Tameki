@@ -1,5 +1,13 @@
-import { RootState } from "@src/store";
+import { createSelector } from "@reduxjs/toolkit";
+import { Product, RootState } from "@src/store";
 
-const productsSelector = (state: RootState) => state.products;
+const productCollectionSelector = (state: RootState) => state.products;
 
-export { productsSelector };
+const productIdSelector = (_: RootState, productId: Product["id"]) => productId;
+
+const productSelector = createSelector(
+  [productCollectionSelector, productIdSelector],
+  (productCollection, productId) => productCollection[productId]
+);
+
+export { productCollectionSelector, productSelector };

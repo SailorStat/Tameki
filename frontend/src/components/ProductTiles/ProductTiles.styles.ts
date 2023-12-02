@@ -1,5 +1,5 @@
+import ToggleProductFavorite from "@components/ToggleProductFavorite";
 import { Card, styled, Typography, typographyClasses } from "@mui/material";
-import CheckboxFavorite from "@ui/checkboxes/CheckboxFavorite";
 
 export const ProductTilesCard = styled(Card)({
   display: "grid",
@@ -17,7 +17,7 @@ export const ProductTilesCardHeader = styled(Typography)({
   },
 });
 
-export const ProductTilesCheckboxFavorite = styled(CheckboxFavorite)({
+export const ProductTilesCheckboxFavorite = styled(ToggleProductFavorite)({
   position: "absolute",
   right: 1,
   top: 1,

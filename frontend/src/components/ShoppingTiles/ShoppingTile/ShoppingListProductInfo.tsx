@@ -1,14 +1,24 @@
+import React from "react";
+import ToggleProductFavorite from "@components/ToggleProductFavorite";
+import { useSelector } from "@hooks";
 import localization from "@localization";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { CardContent, IconButton, Typography } from "@mui/material";
+import { productSelector } from "@slices/products";
+import { dispatchedShoppingListActions } from "@slices/shoppingList/actions";
 import { Product } from "@store";
-import CheckboxFavorite from "@ui/checkboxes/CheckboxFavorite";
 
 interface ShoppingListProductInfoProps {
-  product: Product;
+  productId: Product["id"];
 }
 
-const ShoppingListProductInfo = ({ product: { title, inStock, favorites, id } }: ShoppingListProductInfoProps) => {
+const ShoppingListProductInfo = ({ productId }: ShoppingListProductInfoProps) => {
+  const { title, inStock } = useSelector((state) => productSelector(state, productId));
+
+  const handleToRemoveProduct = React.useCallback(() => {
+    dispatchedShoppingListActions.toRemoveProduct({ productId });
+  }, [productId]);
+
   return (
     <CardContent>
       <Typography component="div" variant="h6">
@@ -17,8 +27,8 @@ const ShoppingListProductInfo = ({ product: { title, inStock, favorites, id } }:
       <Typography color="text.secondary" variant="body2">
         {`${localization.inStock}: ${inStock} ${localization.psc}`}
       </Typography>
-      <CheckboxFavorite checked={favorites} id={id} onClick={console.log} />
-      <IconButton>
+      <ToggleProductFavorite productId={productId} />
+      <IconButton onClick={handleToRemoveProduct}>
         <DeleteIcon />
       </IconButton>
     </CardContent>

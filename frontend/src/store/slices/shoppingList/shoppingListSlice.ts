@@ -2,53 +2,60 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { Product } from "../../types";
 
+interface ToRemoveProduct {
+  count: number;
+  productId: string;
+}
+
 interface ShoppingListState {
-  hiddenProductIds: Product["id"][];
   productIdToOrderCollection: Record<Product["id"], boolean>;
-  products: Product[];
   productsSelectedCollection: Record<Product["id"], number>;
+  productToRemove: ToRemoveProduct | null;
+  shopListProductIds: Product["id"][];
 }
 
 const initialState: ShoppingListState = {
-  hiddenProductIds: [],
   productIdToOrderCollection: {},
-  products: [],
   productsSelectedCollection: {},
+  productToRemove: null,
+  shopListProductIds: [],
 };
 
 const shoppingListSlice = createSlice({
   initialState,
   name: "shoppingList",
   reducers: {
-    addProduct: (state, { payload: { product } }: PayloadAction<{ product: Product }>) => {
-      if (!state.products.some(({ id }) => id === product.id)) {
-        state.products.push(product);
+    addProduct: (
+      state,
+      { payload: { productId, count } }: PayloadAction<{ count?: number; productId: Product["id"] }>
+    ) => {
+      if (!state.shopListProductIds.includes(productId)) {
+        state.shopListProductIds.push(productId);
       }
 
-      if (state.hiddenProductIds.includes(product.id)) {
-        state.hiddenProductIds = state.hiddenProductIds.filter((id) => id === product.id);
-      }
+      state.productToRemove?.productId === productId && (state.productToRemove = null);
 
-      state.productIdToOrderCollection[product.id] = true;
+      state.productIdToOrderCollection[productId] = true;
 
-      if (state.productsSelectedCollection[product.id]) {
-        state.productsSelectedCollection[product.id] += 1;
+      if (count) {
+        state.productsSelectedCollection[productId] = count;
       } else {
-        state.productsSelectedCollection[product.id] = 1;
+        state.productsSelectedCollection[productId] ??= 0;
+        state.productsSelectedCollection[productId] += 1;
       }
     },
 
-    hideProduct: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
-      state.hiddenProductIds.push(productId);
+    removeProduct: (state) => {
+      state.productToRemove = null;
     },
-    removeProduct: (state, { payload: { product } }: PayloadAction<{ product: Product }>) => {
-      state.products = state.products.filter(({ id }) => id === product.id);
-      delete state.productsSelectedCollection[product.id];
-      delete state.productIdToOrderCollection[product.id];
+    toRemoveProduct: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
+      state.shopListProductIds = state.shopListProductIds.filter(
+        (shopListProductId) => productId !== shopListProductId
+      );
 
-      if (state.hiddenProductIds.includes(product.id)) {
-        state.hiddenProductIds = state.hiddenProductIds.filter((id) => id === product.id);
-      }
+      state.productToRemove = { count: state.productsSelectedCollection[productId], productId };
+      delete state.productsSelectedCollection[productId];
+      delete state.productIdToOrderCollection[productId];
     },
 
     changeProductCount: (

@@ -7,8 +7,7 @@ import {
   ShoppingCartOutlined as ShoppingCartOutlinedIcon,
 } from "@mui/icons-material";
 import { Button, capitalize, CardActions, CardContent, CardMedia, Stack, Typography } from "@mui/material";
-import { dispatchedProductActions } from "@slices/products/actions";
-import { useDispatchedShoppingListActions } from "@slices/shoppingList/actions";
+import { dispatchedShoppingListActions } from "@slices/shoppingList/actions";
 import { Product } from "@store";
 import { formatPrice } from "@utils";
 
@@ -20,21 +19,14 @@ interface ProductTileProps {
 }
 
 const ProductTile = ({ product }: ProductTileProps) => {
-  const { addProduct } = useDispatchedShoppingListActions();
-  const { id, title, images, favorites, estimation, soldTimes, reviews, description, price } = product;
+  const { id, title, images, estimation, soldTimes, reviews, description, price } = product;
 
   const handleAddProductToShoppingList = React.useCallback(() => {
-    addProduct({ product });
-  }, [addProduct, product]);
-
-  const handleFavoritesToggle = React.useCallback(({ target }: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if ("id" in target && typeof target.id === "string") {
-      dispatchedProductActions.toggleFavorite({ id: target.id });
-    }
-  }, []);
+    dispatchedShoppingListActions.addProduct({ productId: id });
+  }, [id]);
 
   return (
-    <ProductTileCard key={id}>
+    <ProductTileCard>
       <CardMedia alt={title} component="img" height="194" image={images[0]} />
       <CardContent sx={{ display: "grid", gridTemplateRows: "max-content 1fr max-content" }}>
         <div>
@@ -65,7 +57,7 @@ const ProductTile = ({ product }: ProductTileProps) => {
           </Button>
         </CardActions>
       </CardContent>
-      <ProductTileCheckboxFavorite checked={favorites} id={id} onClick={handleFavoritesToggle} />
+      <ProductTileCheckboxFavorite productId={id} />
     </ProductTileCard>
   );
 };

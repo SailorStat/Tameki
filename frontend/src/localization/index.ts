@@ -1,8 +1,10 @@
 const localization = {
+  cancel: "отмена",
   chooseAll: "Выбрать всё",
   emptyShoppingList: "ваша корзина пуста",
   inStock: "В наличии",
   products: "товаров",
+  productWasDeletedFromShoppingList: "Товар удалён из корзины",
   psc: "шт.",
   shop: "Магазин",
   shoppingList: "Корзина",
