@@ -10,7 +10,7 @@ const shoppingListProductsSelectedCollectionSelector = (state: RootState) =>
 
 const shoppingListProductToRemoveSelector = (state: RootState) => state.shoppingList.productToRemove;
 
-const shoppingListProductIdsToOrderSelector = (state: RootState) => state.shoppingList.productIdToOrderCollection;
+const shoppingListProductIdsToOrderSelector = (state: RootState) => state.shoppingList.productIdIsInOrderCollection;
 
 const selectProductId = (_: RootState, productId: Product["id"]) => productId;
 
@@ -32,7 +32,7 @@ const shoppingListProductSelectedSelector = createSelector(
   (productsSelectedCollection, productId) => productsSelectedCollection[productId] ?? 0
 );
 
-const shoppingListIsOrderedProductSelector = createSelector(
+const shoppingListIsInOrderProductSelector = createSelector(
   [shoppingListProductIdsToOrderSelector, selectProductId],
   (productIdsToOrder, productId) => productIdsToOrder[productId]
 );
@@ -43,7 +43,7 @@ export {
   shoppingListProductIdsToOrderSelector,
   shoppingListProductToRemoveSelector,
   shoppingListProductsSelector,
-  shoppingListIsOrderedProductSelector,
+  shoppingListIsInOrderProductSelector,
   shoppingListLengthSelector,
   shoppingListProductsCountSelector,
   shoppingListProductSelectedSelector,

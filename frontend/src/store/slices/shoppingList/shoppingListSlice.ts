@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { includes } from "lodash";
 
 import { Product } from "../../types";
 
@@ -8,14 +9,14 @@ interface ToRemoveProduct {
 }
 
 interface ShoppingListState {
-  productIdToOrderCollection: Record<Product["id"], boolean>;
+  productIdIsInOrderCollection: Record<Product["id"], boolean>;
   productsSelectedCollection: Record<Product["id"], number>;
   productToRemove: ToRemoveProduct | null;
   shopListProductIds: Product["id"][];
 }
 
 const initialState: ShoppingListState = {
-  productIdToOrderCollection: {},
+  productIdIsInOrderCollection: {},
   productsSelectedCollection: {},
   productToRemove: null,
   shopListProductIds: [],
@@ -35,7 +36,7 @@ const shoppingListSlice = createSlice({
 
       state.productToRemove?.productId === productId && (state.productToRemove = null);
 
-      state.productIdToOrderCollection[productId] = true;
+      state.productIdIsInOrderCollection[productId] = true;
 
       if (count) {
         state.productsSelectedCollection[productId] = count;
@@ -55,7 +56,7 @@ const shoppingListSlice = createSlice({
 
       state.productToRemove = { count: state.productsSelectedCollection[productId], productId };
       delete state.productsSelectedCollection[productId];
-      delete state.productIdToOrderCollection[productId];
+      delete state.productIdIsInOrderCollection[productId];
     },
 
     changeProductCount: (
@@ -63,19 +64,26 @@ const shoppingListSlice = createSlice({
       { payload: { productId, count } }: PayloadAction<{ count: number; productId: Product["id"] }>
     ) => {
       state.productsSelectedCollection[productId] = count;
-      state.productIdToOrderCollection[productId] = !!count;
+      state.productIdIsInOrderCollection[productId] = !!count;
     },
     decrementProductCount: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
       state.productsSelectedCollection[productId] -= 1;
-      state.productIdToOrderCollection[productId] = !!state.productsSelectedCollection[productId];
+      state.productIdIsInOrderCollection[productId] = !!state.productsSelectedCollection[productId];
     },
     incrementProductCount: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
       state.productsSelectedCollection[productId] += 1;
-      state.productIdToOrderCollection[productId] = true;
+      state.productIdIsInOrderCollection[productId] = true;
     },
 
-    toggleProductToOrder: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
-      state.productIdToOrderCollection[productId] = !state.productIdToOrderCollection[productId];
+    toggleProductIdIsInOrder: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
+      state.productIdIsInOrderCollection[productId] = !state.productIdIsInOrderCollection[productId];
+    },
+    toggleProductsIsInOrder: (state) => {
+      const hasUnordered = includes(state.productIdIsInOrderCollection, false);
+
+      state.shopListProductIds.forEach((productId) => {
+        state.productIdIsInOrderCollection[productId] = hasUnordered;
+      });
     },
   },
 });
