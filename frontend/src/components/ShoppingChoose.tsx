@@ -1,6 +1,7 @@
 import React from "react";
 import { Stack } from "@mui/material";
 
+import ShoppingListOrder from "./ShoppingListOrder";
 import ShoppingTiles from "./ShoppingTiles";
 
 const ShoppingChoose = () => {
@@ -12,7 +13,7 @@ const ShoppingChoose = () => {
       gridTemplateColumns={{ lg: "1fr 300px", md: "1fr" }}
     >
       <ShoppingTiles />
-      <div>{"Купить"}</div>
+      <ShoppingListOrder />
     </Stack>
   );
 };

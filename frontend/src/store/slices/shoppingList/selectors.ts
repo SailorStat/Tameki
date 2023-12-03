@@ -5,7 +5,7 @@ import { reduce } from "lodash";
 
 const shoppingListProductIdsSelector = (state: RootState) => state.shoppingList.shopListProductIds;
 
-const shoppingListProductsSelectedCollectionSelector = (state: RootState) =>
+const shoppingListProductSelectedCollectionSelector = (state: RootState) =>
   state.shoppingList.productsSelectedCollection;
 
 const shoppingListProductToRemoveSelector = (state: RootState) => state.shoppingList.productToRemove;
@@ -20,7 +20,7 @@ const shoppingListProductsSelector = createSelector(
 );
 
 const shoppingListProductsCountSelector = createSelector(
-  [shoppingListProductsSelectedCollectionSelector],
+  [shoppingListProductSelectedCollectionSelector],
   (productsSelectedCollection) =>
     reduce(productsSelectedCollection, (allSelectedCount, selectedCount) => allSelectedCount + selectedCount, 0)
 );
@@ -28,7 +28,7 @@ const shoppingListProductsCountSelector = createSelector(
 const shoppingListLengthSelector = createSelector([shoppingListProductIdsSelector], (productIds) => productIds.length);
 
 const shoppingListProductSelectedSelector = createSelector(
-  [shoppingListProductsSelectedCollectionSelector, selectProductId],
+  [shoppingListProductSelectedCollectionSelector, selectProductId],
   (productsSelectedCollection, productId) => productsSelectedCollection[productId] ?? 0
 );
 
@@ -37,9 +37,27 @@ const shoppingListIsInOrderProductSelector = createSelector(
   (productIdsToOrder, productId) => productIdsToOrder[productId]
 );
 
+const shoppingListTotalCostSelector = createSelector(
+  [
+    shoppingListProductIdsSelector,
+    shoppingListProductSelectedCollectionSelector,
+    shoppingListProductIdsToOrderSelector,
+    productCollectionSelector,
+  ],
+  (shoppingListProductIds, selectedCollection, toOrderCollection, productCollection) =>
+    shoppingListProductIds.reduce(
+      (totalCost, productId) =>
+        totalCost +
+        (selectedCollection[productId] && toOrderCollection[productId]
+          ? productCollection[productId].price * selectedCollection[productId]
+          : 0),
+      0
+    )
+);
+
 export {
   shoppingListProductIdsSelector,
-  shoppingListProductsSelectedCollectionSelector,
+  shoppingListProductSelectedCollectionSelector,
   shoppingListProductIdsToOrderSelector,
   shoppingListProductToRemoveSelector,
   shoppingListProductsSelector,
@@ -47,4 +65,5 @@ export {
   shoppingListLengthSelector,
   shoppingListProductsCountSelector,
   shoppingListProductSelectedSelector,
+  shoppingListTotalCostSelector,
 };

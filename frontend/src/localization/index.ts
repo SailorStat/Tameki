@@ -1,6 +1,8 @@
 const localization = {
   cancel: "отмена",
   chooseAll: "Выбрать всё",
+  copied: "Скопировано",
+  copyMessageToOrder: "Скопируйте сообщение для заказа",
   emptyShoppingList: "ваша корзина пуста",
   inStock: "В наличии",
   products: "товаров",
@@ -10,6 +12,7 @@ const localization = {
   shoppingList: "Корзина",
   startShopping: "Начать покупки",
   toShoppingList: "В корзину",
+  totalCostOmitDelivery: "Стоимость без доставки",
   welcome: "Добро пожаловать в магазин",
 };
 
