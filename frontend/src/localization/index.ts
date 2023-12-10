@@ -5,6 +5,7 @@ const localization = {
   copyMessageToOrder: "Скопируйте сообщение для заказа",
   emptyShoppingList: "ваша корзина пуста",
   inStock: "В наличии",
+  orderMessageStart: "Привет, хочу купить эти товары",
   products: "товаров",
   productWasDeletedFromShoppingList: "Товар удалён из корзины",
   psc: "шт.",

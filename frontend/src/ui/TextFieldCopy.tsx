@@ -47,9 +47,9 @@ const TextFieldCopy = ({ value }: TextFieldCopyProps) => {
           readOnly: true,
         }}
         inputRef={textFieldRef}
+        minRows={2}
         multiline
-        rows={value.split(/\r\n|\r|\n/).length}
-        style={{ cursor: "pointer" }}
+        style={{ cursor: "pointer", fontSize: "small" }}
         value={value}
         variant="outlined"
         onClick={handleCopyText}

@@ -2,22 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { includes } from "lodash";
 
 import { Product } from "../../types";
-
-interface ToRemoveProduct {
-  count: number;
-  productId: string;
-}
-
-interface ShoppingListState {
-  productIdIsInOrderCollection: Record<Product["id"], boolean>;
-  productsSelectedCollection: Record<Product["id"], number>;
-  productToRemove: ToRemoveProduct | null;
-  shopListProductIds: Product["id"][];
-}
+import { ShoppingListState } from "./types";
 
 const initialState: ShoppingListState = {
   productIdIsInOrderCollection: {},
-  productsSelectedCollection: {},
+  productSelectedCollection: {},
   productToRemove: null,
   shopListProductIds: [],
 };
@@ -39,10 +28,10 @@ const shoppingListSlice = createSlice({
       state.productIdIsInOrderCollection[productId] = true;
 
       if (count) {
-        state.productsSelectedCollection[productId] = count;
+        state.productSelectedCollection[productId] = count;
       } else {
-        state.productsSelectedCollection[productId] ??= 0;
-        state.productsSelectedCollection[productId] += 1;
+        state.productSelectedCollection[productId] ??= 0;
+        state.productSelectedCollection[productId] += 1;
       }
     },
 
@@ -54,8 +43,8 @@ const shoppingListSlice = createSlice({
         (shopListProductId) => productId !== shopListProductId
       );
 
-      state.productToRemove = { count: state.productsSelectedCollection[productId], productId };
-      delete state.productsSelectedCollection[productId];
+      state.productToRemove = { count: state.productSelectedCollection[productId], productId };
+      delete state.productSelectedCollection[productId];
       delete state.productIdIsInOrderCollection[productId];
     },
 
@@ -63,15 +52,15 @@ const shoppingListSlice = createSlice({
       state,
       { payload: { productId, count } }: PayloadAction<{ count: number; productId: Product["id"] }>
     ) => {
-      state.productsSelectedCollection[productId] = count;
+      state.productSelectedCollection[productId] = count;
       state.productIdIsInOrderCollection[productId] = !!count;
     },
     decrementProductCount: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
-      state.productsSelectedCollection[productId] -= 1;
-      state.productIdIsInOrderCollection[productId] = !!state.productsSelectedCollection[productId];
+      state.productSelectedCollection[productId] -= 1;
+      state.productIdIsInOrderCollection[productId] = !!state.productSelectedCollection[productId];
     },
     incrementProductCount: (state, { payload: { productId } }: PayloadAction<{ productId: Product["id"] }>) => {
-      state.productsSelectedCollection[productId] += 1;
+      state.productSelectedCollection[productId] += 1;
       state.productIdIsInOrderCollection[productId] = true;
     },
 

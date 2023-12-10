@@ -6,7 +6,7 @@ import { reduce } from "lodash";
 const shoppingListProductIdsSelector = (state: RootState) => state.shoppingList.shopListProductIds;
 
 const shoppingListProductSelectedCollectionSelector = (state: RootState) =>
-  state.shoppingList.productsSelectedCollection;
+  state.shoppingList.productSelectedCollection;
 
 const shoppingListProductToRemoveSelector = (state: RootState) => state.shoppingList.productToRemove;
 
@@ -37,6 +37,22 @@ const shoppingListIsInOrderProductSelector = createSelector(
   (productIdsToOrder, productId) => productIdsToOrder[productId]
 );
 
+const shoppingListSelectedToOrderSelector = createSelector(
+  [shoppingListProductSelectedCollectionSelector, shoppingListProductIdsToOrderSelector],
+  (selectedCollection, toOrderCollection) =>
+    reduce<Record<Product["id"], number>, Record<Product["id"], number>>(
+      selectedCollection,
+      (selectedCollection, selectedCount, productId) => {
+        if (toOrderCollection[productId]) {
+          selectedCollection[productId] = selectedCount;
+        }
+
+        return selectedCollection;
+      },
+      {}
+    )
+);
+
 const shoppingListTotalCostSelector = createSelector(
   [
     shoppingListProductIdsSelector,
@@ -65,5 +81,6 @@ export {
   shoppingListLengthSelector,
   shoppingListProductsCountSelector,
   shoppingListProductSelectedSelector,
+  shoppingListSelectedToOrderSelector,
   shoppingListTotalCostSelector,
 };
