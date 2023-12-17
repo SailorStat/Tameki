@@ -1,3 +1,4 @@
+import Product from "@components/ProductModal";
 import { useSelector } from "@hooks";
 import { Stack } from "@mui/material";
 import { productCollectionSelector } from "@slices/products";
@@ -23,6 +24,7 @@ const ProductTiles = () => {
       {Object.values(products).map((product) => (
         <ProductTile key={product.id} product={product} />
       ))}
+      <Product />
     </Stack>
   );
 };

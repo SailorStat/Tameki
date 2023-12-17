@@ -9,7 +9,7 @@ import Paths from "./Paths";
 const LayoutWithNavigation = React.lazy(async () => import("../layouts/LayoutWithMenu"));
 
 const Greet = React.lazy(async () => import("../pages/Greet"));
-const MakingOrder = React.lazy(async () => import("../pages/MakingOrder"));
+const Order = React.lazy(async () => import("../pages/Order"));
 
 const ROUTES: RouteObject[] = [
   {
@@ -24,9 +24,9 @@ const ROUTES: RouteObject[] = [
         path: Paths.base(),
       },
       {
-        element: <MakingOrder />,
-        id: "makingOrder",
-        path: Paths.shoppingList(),
+        element: <Order />,
+        id: "order",
+        path: Paths.order(),
       },
       ...NAVIGATION_ROUTES,
     ],

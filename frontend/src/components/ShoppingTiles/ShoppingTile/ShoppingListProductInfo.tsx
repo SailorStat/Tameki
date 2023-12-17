@@ -4,7 +4,7 @@ import { useSelector } from "@hooks";
 import localization from "@localization";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { CardContent, IconButton, Typography } from "@mui/material";
-import { productSelector } from "@slices/products";
+import { createProductSelector } from "@slices/products";
 import { dispatchedShoppingListActions } from "@slices/shoppingList/actions";
 import { Product } from "@store";
 
@@ -13,7 +13,7 @@ interface ShoppingListProductInfoProps {
 }
 
 const ShoppingListProductInfo = ({ productId }: ShoppingListProductInfoProps) => {
-  const { title, inStock } = useSelector((state) => productSelector(state, productId));
+  const { title, inStock } = useSelector(createProductSelector(productId!));
 
   const handleToRemoveProduct = React.useCallback(() => {
     dispatchedShoppingListActions.toRemoveProduct({ productId });

@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "@hooks";
 import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
 import { Button, CardContent, Typography } from "@mui/material";
-import { productSelector } from "@slices/products";
+import { createProductSelector } from "@slices/products";
 import { shoppingListProductSelectedSelector } from "@slices/shoppingList";
 import { dispatchedShoppingListActions } from "@slices/shoppingList/actions";
 import { Product } from "@store";
@@ -15,7 +15,7 @@ interface ShoppingProductCounterProps {
 }
 
 const ShoppingProductCounter = ({ productId }: ShoppingProductCounterProps) => {
-  const { inStock, price } = useSelector((state) => productSelector(state, productId));
+  const { inStock, price } = useSelector(createProductSelector(productId!));
   const productSelectedCount = useSelector((state) => shoppingListProductSelectedSelector(state, productId));
 
   const handleDecrementProductToShoppingList = React.useCallback(() => {

@@ -10,7 +10,7 @@ const initialState: Record<Product["id"], Product> = {
     estimation: 90,
     favorites: false,
     id: "40e3fe57",
-    images: [Images.HelicopterTour],
+    images: [Images.HelicopterTour, Images.HelicopterTour, Images.HelicopterTour, Images.HelicopterTour],
     inStock: 12,
     price: 10_000,
     reviews: 200,

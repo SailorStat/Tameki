@@ -10,7 +10,7 @@ const ShoppingListTrigger = () => {
   const navigate = useNavigate();
 
   return (
-    <IconButton color="inherit" onClick={() => navigate(Paths.shoppingList())}>
+    <IconButton color="inherit" onClick={() => navigate(Paths.order())}>
       <Badge badgeContent={shoppingListLength} color="warning">
         <ShoppingBasketOutlinedIcon />
       </Badge>

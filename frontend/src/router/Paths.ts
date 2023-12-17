@@ -1,7 +1,7 @@
 const Paths = {
   base: () => "/tameki",
+  order: () => `${Paths.base()}/order`,
   shop: () => `${Paths.base()}/shop`,
-  shoppingList: () => `${Paths.base()}/shoppingList`,
 };
 
 export default Paths;

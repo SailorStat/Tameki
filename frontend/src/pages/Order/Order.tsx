@@ -7,7 +7,7 @@ import LayoutWithMenuTitle from "@layouts/LayoutWithMenuTitle";
 import localization from "@localization";
 import { shoppingListLengthSelector, shoppingListProductsCountSelector } from "@slices/shoppingList";
 
-const MakingOrder = () => {
+const Order = () => {
   const shoppingListProductsCount = useSelector(shoppingListProductsCountSelector);
   const shoppingListLength = useSelector(shoppingListLengthSelector);
 
@@ -22,4 +22,4 @@ const MakingOrder = () => {
   );
 };
 
-export default MakingOrder;
+export default Order;

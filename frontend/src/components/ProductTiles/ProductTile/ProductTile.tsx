@@ -7,9 +7,11 @@ import {
   ShoppingCartOutlined as ShoppingCartOutlinedIcon,
 } from "@mui/icons-material";
 import { Button, capitalize, CardActions, CardContent, CardMedia, Stack, Typography } from "@mui/material";
+import SearchParams from "@router/SearchParams";
 import { dispatchedShoppingListActions } from "@slices/shoppingList/actions";
 import { Product } from "@store";
 import { formatPrice } from "@utils";
+import { useSearchParams } from "react-router-dom";
 
 import { ProductTileCard, ProductTileCardHeader, ProductTileCheckboxFavorite } from "./ProductTile.styles";
 import ProductTileStatInfo from "./ProductTileStatInfo";
@@ -19,14 +21,24 @@ interface ProductTileProps {
 }
 
 const ProductTile = ({ product }: ProductTileProps) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { id, title, images, estimation, soldTimes, reviews, description, price } = product;
 
-  const handleAddProductToShoppingList = React.useCallback(() => {
-    dispatchedShoppingListActions.addProduct({ productId: id });
-  }, [id]);
+  const handleCardClick = React.useCallback(() => {
+    searchParams.set(SearchParams.ProductId, id);
+    setSearchParams(searchParams);
+  }, [id, setSearchParams, searchParams]);
+
+  const handleAddProductToShoppingList = React.useCallback(
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      event.stopPropagation();
+      dispatchedShoppingListActions.addProduct({ productId: id });
+    },
+    [id]
+  );
 
   return (
-    <ProductTileCard>
+    <ProductTileCard sx={{ cursor: "pointer" }} onClick={handleCardClick}>
       <CardMedia alt={title} component="img" height="194" image={images[0]} />
       <CardContent sx={{ display: "grid", gridTemplateRows: "max-content 1fr max-content" }}>
         <div>

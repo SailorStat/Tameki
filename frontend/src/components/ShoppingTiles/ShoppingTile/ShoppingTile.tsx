@@ -1,6 +1,6 @@
 import { useSelector } from "@hooks";
 import { Card, CardMedia } from "@mui/material";
-import { productSelector } from "@slices/products";
+import { createProductSelector } from "@slices/products";
 import { shoppingListIsInOrderProductSelector } from "@slices/shoppingList";
 import { Product } from "@store";
 
@@ -13,7 +13,7 @@ interface ShoppingTileProps {
 }
 
 const ShoppingTile = ({ productId }: ShoppingTileProps) => {
-  const { title, images } = useSelector((state) => productSelector(state, productId));
+  const { title, images } = useSelector(createProductSelector(productId!));
   const isInOrder = useSelector((state) => shoppingListIsInOrderProductSelector(state, productId));
 
   return (

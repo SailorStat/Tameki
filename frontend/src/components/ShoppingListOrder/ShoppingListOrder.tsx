@@ -40,7 +40,7 @@ const ShoppingListOrder = () => {
             variant="contained"
             onClick={handleOrder}
           >
-            {"Заказать"}
+            {localization.order}
           </Button>
         </Link>
       </Stack>
