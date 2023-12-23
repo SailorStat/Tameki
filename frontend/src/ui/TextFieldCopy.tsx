@@ -7,9 +7,11 @@ import {
   IconButton,
   InputAdornment,
   inputBaseClasses,
+  Portal,
   Snackbar,
   styled,
   TextField,
+  TextFieldProps,
 } from "@mui/material";
 
 const TextFieldStyled = styled(TextField)({
@@ -18,11 +20,11 @@ const TextFieldStyled = styled(TextField)({
   },
 });
 
-interface TextFieldCopyProps {
+interface TextFieldCopyProps extends Omit<TextFieldProps, "InputProps" | "inputRef" | "onClick"> {
   value: string;
 }
 
-const TextFieldCopy = ({ value }: TextFieldCopyProps) => {
+const TextFieldCopy = ({ value, ...props }: TextFieldCopyProps) => {
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const textFieldRef = React.useRef<HTMLInputElement>(null);
 
@@ -47,18 +49,20 @@ const TextFieldCopy = ({ value }: TextFieldCopyProps) => {
           readOnly: true,
         }}
         inputRef={textFieldRef}
-        minRows={2}
         multiline
         style={{ cursor: "pointer", fontSize: "small" }}
         value={value}
         variant="outlined"
         onClick={handleCopyText}
+        {...props}
       />
-      <Snackbar anchorOrigin={{ horizontal: "right", vertical: "bottom" }} open={openSnackbar}>
-        <Alert>
-          <AlertTitle>{localization.copied}</AlertTitle>
-        </Alert>
-      </Snackbar>
+      <Portal>
+        <Snackbar anchorOrigin={{ horizontal: "right", vertical: "bottom" }} open={openSnackbar}>
+          <Alert sx={{ minWidth: 150 }}>
+            <AlertTitle sx={{ margin: 0 }}>{localization.copied}</AlertTitle>
+          </Alert>
+        </Snackbar>
+      </Portal>
     </>
   );
 };

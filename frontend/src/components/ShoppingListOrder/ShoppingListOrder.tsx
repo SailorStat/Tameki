@@ -31,7 +31,7 @@ const ShoppingListOrder = () => {
           {localization.copyMessageToOrder}
           {": "}
         </Typography>
-        <TextFieldCopy value={getOrderMessage(selectedToOrder)} />
+        <TextFieldCopy minRows={2} value={getOrderMessage(selectedToOrder)} />
         <Link style={{ display: "block" }} target="_blank" to="https://t.me/XenUx">
           <Button
             disabled={!totalCost}

@@ -17,7 +17,7 @@ const ProductModal = () => {
 
   return (
     <Modal open={!!productId} onClose={handleClose}>
-      <ProductPaper>
+      <ProductPaper sx={{ overflowY: "auto" }}>
         <CloseButton onClick={handleClose} />
         <Product />
       </ProductPaper>

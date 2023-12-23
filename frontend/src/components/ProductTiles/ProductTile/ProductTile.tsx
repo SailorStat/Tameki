@@ -1,14 +1,13 @@
 import React from "react";
-import localization from "@localization";
+import ToShoppingList from "@components/ToShoppingList";
+import ToShoppingListButton from "@components/ToShoppingList/ToShoppingListButton";
 import {
   ForumOutlined as ForumOutlinedIcon,
   RecommendOutlined as RecommendOutlinedIcon,
-  ShoppingBasketOutlined as ShoppingBasketOutlinedIcon,
   ShoppingCartOutlined as ShoppingCartOutlinedIcon,
 } from "@mui/icons-material";
-import { Button, capitalize, CardActions, CardContent, CardMedia, Stack, Typography } from "@mui/material";
+import { CardActions, CardContent, CardMedia, Stack, Typography } from "@mui/material";
 import SearchParams from "@router/SearchParams";
-import { dispatchedShoppingListActions } from "@slices/shoppingList/actions";
 import { Product } from "@store";
 import { formatPrice } from "@utils";
 import { useSearchParams } from "react-router-dom";
@@ -28,14 +27,6 @@ const ProductTile = ({ product }: ProductTileProps) => {
     searchParams.set(SearchParams.ProductId, id);
     setSearchParams(searchParams);
   }, [id, setSearchParams, searchParams]);
-
-  const handleAddProductToShoppingList = React.useCallback(
-    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      event.stopPropagation();
-      dispatchedShoppingListActions.addProduct({ productId: id });
-    },
-    [id]
-  );
 
   return (
     <ProductTileCard sx={{ cursor: "pointer" }} onClick={handleCardClick}>
@@ -58,15 +49,7 @@ const ProductTile = ({ product }: ProductTileProps) => {
         </div>
         <div />
         <CardActions sx={{ paddingLeft: 0, paddingRight: 0 }}>
-          <Button
-            size="small"
-            startIcon={<ShoppingBasketOutlinedIcon />}
-            sx={{ textTransform: "none" }}
-            variant="contained"
-            onClick={handleAddProductToShoppingList}
-          >
-            {capitalize(localization.toShoppingList)}
-          </Button>
+          <ToShoppingList productId={id} />
         </CardActions>
       </CardContent>
       <ProductTileCheckboxFavorite productId={id} />

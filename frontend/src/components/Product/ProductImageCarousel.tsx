@@ -7,13 +7,15 @@ const ProductImageCarousel = () => {
   const { title, images } = useSelector(createProductSelector(productId!));
 
   return (
-    <Carousel>
-      {images.map((image) => (
-        <div key={image} style={{ aspectRatio: "3 / 4", minHeight: 80 }}>
-          <img alt={title} src={image} style={{ height: "100%", objectFit: "cover", width: "100%" }} />
-        </div>
-      ))}
-    </Carousel>
+    <div>
+      <Carousel>
+        {images.map((image) => (
+          <div key={image} style={{ aspectRatio: "3 / 4", minHeight: 80 }}>
+            <img alt={title} src={image} style={{ height: "100%", objectFit: "cover", width: "100%" }} />
+          </div>
+        ))}
+      </Carousel>
+    </div>
   );
 };
 
