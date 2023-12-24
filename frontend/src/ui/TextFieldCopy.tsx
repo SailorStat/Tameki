@@ -21,10 +21,11 @@ const TextFieldStyled = styled(TextField)({
 });
 
 interface TextFieldCopyProps extends Omit<TextFieldProps, "InputProps" | "inputRef" | "onClick"> {
+  InputProps?: Omit<TextFieldProps["InputProps"], "endAdornment" | "readonly">;
   value: string;
 }
 
-const TextFieldCopy = ({ value, ...props }: TextFieldCopyProps) => {
+const TextFieldCopy = ({ value, InputProps, ...props }: TextFieldCopyProps) => {
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const textFieldRef = React.useRef<HTMLInputElement>(null);
 
@@ -47,6 +48,7 @@ const TextFieldCopy = ({ value, ...props }: TextFieldCopyProps) => {
             </InputAdornment>
           ),
           readOnly: true,
+          ...InputProps,
         }}
         inputRef={textFieldRef}
         multiline

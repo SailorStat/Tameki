@@ -1,6 +1,7 @@
 import React from "react";
 import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { withStopPropagation } from "@utils";
 
 import { TextFieldCounter } from "./TextFieldCounter";
 
@@ -26,21 +27,21 @@ const QuantityInput = ({ maxValue, minValue, value, onChange, onDecrement, onInc
       <Button
         disabled={!!minValue && value <= minValue}
         size="small"
-        sx={{ minWidth: 30 }}
+        sx={{ borderBottomRightRadius: 0, borderTopRightRadius: 0, minWidth: 30 }}
         variant="contained"
-        onClick={onDecrement}
+        onClick={withStopPropagation(onDecrement)}
       >
-        <RemoveIcon />
+        <RemoveIcon fontSize="small" />
       </Button>
-      <TextFieldCounter value={value} onChange={handleQuantityChange} />
+      <TextFieldCounter value={value} variant="filled" onChange={withStopPropagation(handleQuantityChange)} />
       <Button
         disabled={!!maxValue && value >= maxValue}
         size="small"
-        sx={{ minWidth: 30 }}
+        sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0, minWidth: 30 }}
         variant="contained"
-        onClick={onIncrement}
+        onClick={withStopPropagation(onIncrement)}
       >
-        <AddIcon />
+        <AddIcon fontSize="small" />
       </Button>
     </div>
   );

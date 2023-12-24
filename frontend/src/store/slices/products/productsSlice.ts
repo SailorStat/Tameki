@@ -12,6 +12,7 @@ const initialState: Record<Product["id"], Product> = {
     id: "40e3fe57",
     images: [Images.HelicopterTour, Images.HelicopterTour, Images.HelicopterTour, Images.HelicopterTour],
     inStock: 12,
+    labels: ["любо", "дорого", "богато"],
     price: 10_000,
     reviews: 200,
     soldTimes: 15,

@@ -5,7 +5,6 @@ import { createProductSelector } from "@slices/products";
 import { shoppingListIsInOrderProductSelector } from "@slices/shoppingList";
 import { Product } from "@store";
 
-import ShoppingProductCounter from "../../ShoppingProductCounter";
 import ShoppingListProductInfo from "./ShoppingListProductInfo";
 import ShoppingProductToOrderCheckbox from "./ShoppingProductToOrderCheckbox";
 

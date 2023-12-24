@@ -1,6 +1,5 @@
 import React from "react";
 import ToShoppingList from "@components/ToShoppingList";
-import ToShoppingListButton from "@components/ToShoppingList/ToShoppingListButton";
 import {
   ForumOutlined as ForumOutlinedIcon,
   RecommendOutlined as RecommendOutlinedIcon,
@@ -9,7 +8,7 @@ import {
 import { CardActions, CardContent, CardMedia, Stack, Typography } from "@mui/material";
 import SearchParams from "@router/SearchParams";
 import { Product } from "@store";
-import { formatPrice } from "@utils";
+import { formatEstimation, formatPrice } from "@utils";
 import { useSearchParams } from "react-router-dom";
 
 import { ProductTileCard, ProductTileCardHeader, ProductTileCheckboxFavorite } from "./ProductTile.styles";
@@ -39,10 +38,7 @@ const ProductTile = ({ product }: ProductTileProps) => {
           </ProductTileCardHeader>
           <ProductTileCardHeader variant="body2">{description}</ProductTileCardHeader>
           <Stack direction="row" gap={2}>
-            <ProductTileStatInfo
-              count={estimation ? (Math.round(estimation / 2) / 10).toFixed(1) : undefined}
-              Icon={RecommendOutlinedIcon}
-            />
+            <ProductTileStatInfo count={formatEstimation(estimation)} Icon={RecommendOutlinedIcon} />
             <ProductTileStatInfo count={soldTimes} Icon={ShoppingCartOutlinedIcon} />
             <ProductTileStatInfo count={reviews} Icon={ForumOutlinedIcon} />
           </Stack>

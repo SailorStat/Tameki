@@ -22,7 +22,7 @@ const ToShoppingListButton = ({ productId }: ToShoppingListButtonProps) => {
     <Button
       size="small"
       startIcon={<ShoppingBasketOutlinedIcon />}
-      sx={{ textTransform: "none" }}
+      sx={{ textTransform: "none", width: 150 }}
       variant="contained"
       onClick={handleAddProductToShoppingList}
     >
