@@ -7,6 +7,7 @@ const localization = {
   description: "Описание",
   emptyShoppingList: "ваша корзина пуста",
   inStock: "В наличии",
+  labels: "Метки",
   order: "Заказать",
   orderMessageStart: "Привет, хочу купить эти товары",
   perUnit: "за 1 шт.",
