@@ -1,12 +1,12 @@
 import { Container, Stack, Typography } from "@mui/material";
 
-export interface LayoutMenuHeaderProps {
+export interface LayoutWithMenuTitleProps {
   children: React.ReactNode;
   subtitle?: number | string;
   title: string;
 }
 
-const LayoutMenuHeader = ({ title, subtitle, children }: LayoutMenuHeaderProps) => (
+const LayoutWithMenuTitle = ({ title, subtitle, children }: LayoutWithMenuTitleProps) => (
   <Container fixed>
     <Stack paddingTop={1} spacing={2}>
       <Stack alignItems="baseline" direction="row" spacing={1}>
@@ -22,4 +22,4 @@ const LayoutMenuHeader = ({ title, subtitle, children }: LayoutMenuHeaderProps) 
   </Container>
 );
 
-export default LayoutMenuHeader;
+export default LayoutWithMenuTitle;

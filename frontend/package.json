@@ -27,6 +27,7 @@
     "@mui/icons-material": "^5.14.15",
     "@mui/material": "^5.14.15",
     "@mui/styled-engine": "^5.14.17",
+    "@mui/x-tree-view": "^6.17.0",
     "@reduxjs/toolkit": "^1.9.7",
     "immer": "9.0.21",
     "lodash": "^4.17.21",

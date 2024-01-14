@@ -16,6 +16,7 @@ const localization = {
   psc: "шт.",
   shop: "Магазин",
   shoppingList: "Корзина",
+  siteTree: "Дерево сайта",
   startShopping: "Начать покупки",
   toShoppingList: "В корзину",
   totalCostOmitDelivery: "Стоимость без доставки",

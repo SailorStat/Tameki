@@ -1,9 +1,9 @@
 import CarouselAdvertisement from "@components/CarouselAdvertisement";
 import { Container, Stack, Typography } from "@mui/material";
 
-import { LayoutMenuHeaderProps } from "../LayoutWithMenuTitle";
+import { LayoutWithMenuTitleProps } from "../LayoutWithMenuTitle";
 
-const LayoutWithMenuTitleCarousel = ({ title, children }: LayoutMenuHeaderProps) => (
+const LayoutWithMenuTitleCarousel = ({ title, children }: LayoutWithMenuTitleProps) => (
   <Container fixed>
     <Stack paddingTop={1} spacing={2}>
       <Typography variant="h4">{title}</Typography>
