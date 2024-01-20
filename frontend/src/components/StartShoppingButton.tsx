@@ -1,12 +1,15 @@
 import localization from "@localization";
 import { Button } from "@mui/material";
-import { Paths } from "@router";
 import { useNavigate } from "react-router-dom";
 
-const StartShoppingButton = () => {
+interface StartShoppingButtonProps {
+  shopPath: string;
+}
+
+const StartShoppingButton = ({ shopPath }: StartShoppingButtonProps) => {
   const navigate = useNavigate();
 
-  const handleStartShopping = () => navigate(Paths.shop());
+  const handleStartShopping = () => navigate(shopPath);
 
   return (
     <Button variant="contained" onClick={handleStartShopping}>

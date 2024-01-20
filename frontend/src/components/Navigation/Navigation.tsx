@@ -1,12 +1,20 @@
 import { Shop as ShopIcon } from "@mui/icons-material";
 import { AppBar, Button, IconButton, Stack, Toolbar } from "@mui/material";
-import { NAVIGATION_ROUTES } from "@router";
-import { useNavigate } from "react-router-dom";
+import { Paths, PathVariable } from "@router";
+import { useNavigate, useParams } from "react-router-dom";
 
 import ShoppingListTrigger from "./ShoppingListTrigger";
 
 const Navigation = () => {
   const navigate = useNavigate();
+  const { shopId } = useParams<{ [PathVariable.ShopId]: string }>();
+  const shopPath = `/${shopId}`;
+
+  const navigationButtons = [
+    { id: "greet", path: Paths.getGreet(shopPath) },
+    { id: "shop", path: shopPath },
+    { id: "about", path: Paths.getAbout(shopPath) },
+  ] satisfies { id: string; path: string }[];
 
   return (
     <AppBar position="sticky">
@@ -15,7 +23,7 @@ const Navigation = () => {
           <IconButton color="inherit">
             <ShopIcon />
           </IconButton>
-          {NAVIGATION_ROUTES.map(({ id, path }) => (
+          {navigationButtons.map(({ id, path }) => (
             <Button
               color="inherit"
               disabled={path === location.pathname}
@@ -28,9 +36,11 @@ const Navigation = () => {
           ))}
         </Stack>
         <div style={{ flex: 1 }} />
-        <Stack direction="row" spacing={1}>
-          <ShoppingListTrigger />
-        </Stack>
+        {shopId && (
+          <Stack direction="row" spacing={1}>
+            <ShoppingListTrigger shopPath={shopPath} />
+          </Stack>
+        )}
       </Toolbar>
     </AppBar>
   );

@@ -1,11 +1,14 @@
 import ProductTiles from "@components/ProductTiles";
+import LayoutWithMenu from "@layouts/LayoutWithMenu";
+import LayoutWithTitleCarousel from "@layouts/LayoutWithTitleCarousel";
 import localization from "@localization";
-import LayoutWithMenuTitleCarousel from "@src/layouts/LayoutWithMenuTitleCarousel";
 
 const Shop = () => (
-  <LayoutWithMenuTitleCarousel title={localization.shop}>
-    <ProductTiles />
-  </LayoutWithMenuTitleCarousel>
+  <LayoutWithMenu>
+    <LayoutWithTitleCarousel title={localization.shop}>
+      <ProductTiles />
+    </LayoutWithTitleCarousel>
+  </LayoutWithMenu>
 );
 
 export default Shop;

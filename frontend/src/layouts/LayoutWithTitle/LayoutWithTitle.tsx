@@ -6,7 +6,7 @@ export interface LayoutWithMenuTitleProps {
   title: string;
 }
 
-const LayoutWithMenuTitle = ({ title, subtitle, children }: LayoutWithMenuTitleProps) => (
+const LayoutWithTitle = ({ title, subtitle, children }: LayoutWithMenuTitleProps) => (
   <Container fixed>
     <Stack paddingTop={1} spacing={2}>
       <Stack alignItems="baseline" direction="row" spacing={1}>
@@ -22,4 +22,4 @@ const LayoutWithMenuTitle = ({ title, subtitle, children }: LayoutWithMenuTitleP
   </Container>
 );
 
-export default LayoutWithMenuTitle;
+export default LayoutWithTitle;

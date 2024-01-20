@@ -1,9 +1,9 @@
 import React from "react";
+import LayoutWithTitle from "@layouts/LayoutWithTitle";
 import localization from "@localization";
 import { ChevronRight, ExpandMore } from "@mui/icons-material";
 import { Box, styled, SvgIconProps, Typography } from "@mui/material";
 import { TreeItem, treeItemClasses, TreeItemProps, TreeView } from "@mui/x-tree-view";
-import LayoutWithMenuTitle from "@src/layouts/LayoutWithMenuTitle";
 
 interface RenderTree {
   children?: readonly RenderTree[];
@@ -21,6 +21,7 @@ const DATA: RenderTree = {
           children: [
             { description: "страница о продавце", id: "/aboutShop", name: "/about" },
             { description: "страница для заказа", id: "/shippingList", name: "/shippingList" },
+            { description: "страница продавца + модалка о товаре", id: "/product", name: "/{id}" },
             { description: "заказы", id: "/orders", name: "/orders" },
           ],
           description: "страница товаров продавца",
@@ -128,7 +129,7 @@ const SiteTree = () => {
   );
 
   return (
-    <LayoutWithMenuTitle title={localization.siteTree}>
+    <LayoutWithTitle title={localization.siteTree}>
       <TreeView
         defaultCollapseIcon={<ExpandMore />}
         defaultExpanded={[...JSON.stringify(DATA).matchAll(/"id":"\/[a-z]*"/g)].reduce<string[]>(
@@ -139,7 +140,7 @@ const SiteTree = () => {
       >
         {renderTree(DATA, 0)}
       </TreeView>
-    </LayoutWithMenuTitle>
+    </LayoutWithTitle>
   );
 };
 

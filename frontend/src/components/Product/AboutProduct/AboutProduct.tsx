@@ -55,7 +55,14 @@ const AboutProduct = ({ productId }: AboutProductProps) => {
         </Typography>
       </DetailWrapper>
       <DetailWrapper direction="row" title={localization.article}>
-        <TextFieldCopy fullWidth={false} size="small" style={{ width: "130px" }} value={article} variant="standard" />
+        <TextFieldCopy
+          fullWidth={false}
+          multiline={false}
+          size="small"
+          style={{ width: "130px" }}
+          value={article}
+          variant="standard"
+        />
       </DetailWrapper>
       <ProductLabels labels={labels} />
     </div>

@@ -1,49 +1,47 @@
 import React from "react";
 import { LinearProgress } from "@mui/material";
 import { RouteObject } from "react-router/dist/lib/context";
-import { Outlet } from "react-router-dom";
 
-import NAVIGATION_ROUTES from "./navigationRoutes";
 import Paths from "./Paths";
 
-const LayoutWithMenu = React.lazy(async () => import("../layouts/LayoutWithMenu"));
-
 const Greet = React.lazy(async () => import("../pages/Greet"));
+const Shop = React.lazy(async () => import("../pages/Shop"));
 const Order = React.lazy(async () => import("../pages/Order"));
 const SiteTree = React.lazy(async () => import("../pages/SiteTree"));
 
 const ROUTES: RouteObject[] = [
+  // Общие
   {
-    children: [
-      {
-        element: <Greet />,
-        id: "greet",
-        path: Paths.base(),
-      },
-      {
-        element: <SiteTree />,
-        id: "siteTree",
-        path: Paths.siteTree(),
-      },
-      {
-        children: [
-          {
-            element: <Greet />,
-            id: "greetTameki",
-            path: Paths.greet(Paths.tameki()),
-          },
-          {
-            element: <Order />,
-            id: "order",
-            path: Paths.order(Paths.tameki()),
-          },
-        ],
-        element: <Outlet />,
-        path: Paths.tameki(),
-      },
-      ...NAVIGATION_ROUTES,
-    ],
-    element: <LayoutWithMenu />,
+    element: <Greet />,
+    id: "greet",
+    path: Paths.base,
+  },
+  {
+    element: <SiteTree />,
+    id: "siteTree",
+    path: Paths.siteTree,
+  },
+
+  // Магазин
+  {
+    element: <Greet />,
+    id: "greetTameki",
+    path: Paths.greet,
+  },
+  {
+    element: <Greet />,
+    id: "about",
+    path: Paths.about,
+  },
+  {
+    element: <Order />,
+    id: "order",
+    path: Paths.order,
+  },
+  {
+    element: <Shop />,
+    id: "shop",
+    path: Paths.shop,
   },
 ].map((route) => ({
   ...route,

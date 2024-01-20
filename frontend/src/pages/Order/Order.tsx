@@ -3,7 +3,8 @@ import ProductTiles from "@components/ProductTiles";
 import ShoppingChoose from "@components/ShoppingChoose";
 import RemoveProductAlert from "@components/ShoppingTiles/RemoveProductSnackbar";
 import { useSelector } from "@hooks";
-import LayoutWithMenuTitle from "@layouts/LayoutWithMenuTitle";
+import LayoutWithMenu from "@layouts/LayoutWithMenu";
+import LayoutWithTitle from "@layouts/LayoutWithTitle";
 import localization from "@localization";
 import { shoppingListLengthSelector, shoppingListProductsCountSelector } from "@slices/shoppingList";
 
@@ -12,13 +13,15 @@ const Order = () => {
   const shoppingListLength = useSelector(shoppingListLengthSelector);
 
   return (
-    <LayoutWithMenuTitle subtitle={shoppingListProductsCount} title={localization.shoppingList}>
-      <div style={{ minHeight: "calc(100vh - 60px)" }}>
-        {shoppingListLength ? <ShoppingChoose /> : <EmptyShoppingList />}
-      </div>
-      <RemoveProductAlert />
-      <ProductTiles />
-    </LayoutWithMenuTitle>
+    <LayoutWithMenu>
+      <LayoutWithTitle subtitle={shoppingListProductsCount} title={localization.shoppingList}>
+        <div style={{ minHeight: "calc(100vh - 60px)" }}>
+          {shoppingListLength ? <ShoppingChoose /> : <EmptyShoppingList />}
+        </div>
+        <RemoveProductAlert />
+        <ProductTiles />
+      </LayoutWithTitle>
+    </LayoutWithMenu>
   );
 };
 

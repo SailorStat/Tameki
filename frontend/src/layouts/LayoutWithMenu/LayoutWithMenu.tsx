@@ -1,11 +1,14 @@
 import Navigation from "@components/Navigation";
 import { Stack } from "@mui/material";
-import { Outlet } from "react-router-dom";
 
-const LayoutWithMenu = () => (
+interface LayoutWithMenuProps {
+  children: React.ReactNode;
+}
+
+const LayoutWithMenu = ({ children }: LayoutWithMenuProps) => (
   <Stack display="grid" gridTemplateRows="max-content 1fr" minHeight="100vh">
     <Navigation />
-    <Outlet />
+    {children}
   </Stack>
 );
 
