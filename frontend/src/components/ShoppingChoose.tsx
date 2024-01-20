@@ -1,7 +1,7 @@
 import React from "react";
 import { Stack } from "@mui/material";
 
-import ShoppingListOrder from "./ShoppingListOrder";
+import ShoppingListOrder from "./ShoppingList";
 import ShoppingTiles from "./ShoppingTiles";
 
 const ShoppingChoose = () => {

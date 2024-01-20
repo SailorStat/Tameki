@@ -13,10 +13,8 @@ const ShoppingListTrigger = ({ shopPath }: ShoppingListTriggerProps) => {
   const shoppingListLength = useSelector(shoppingListProductsCountSelector);
   const navigate = useNavigate();
 
-  console.log(shopPath);
-
   return (
-    <IconButton color="inherit" onClick={() => navigate(Paths.getOrder(shopPath))}>
+    <IconButton color="inherit" onClick={() => navigate(Paths.getShoppingList(shopPath))}>
       <Badge badgeContent={shoppingListLength} color="warning">
         <ShoppingBasketOutlinedIcon />
       </Badge>

@@ -6,7 +6,7 @@ import Paths from "./Paths";
 
 const Greet = React.lazy(async () => import("../pages/Greet"));
 const Shop = React.lazy(async () => import("../pages/Shop"));
-const Order = React.lazy(async () => import("../pages/Order"));
+const ShoppingList = React.lazy(async () => import("../pages/ShoppingList"));
 const SiteTree = React.lazy(async () => import("../pages/SiteTree"));
 
 const ROUTES: RouteObject[] = [
@@ -34,9 +34,9 @@ const ROUTES: RouteObject[] = [
     path: Paths.about,
   },
   {
-    element: <Order />,
-    id: "order",
-    path: Paths.order,
+    element: <ShoppingList />,
+    id: "shoppingList",
+    path: Paths.shoppingList,
   },
   {
     element: <Shop />,

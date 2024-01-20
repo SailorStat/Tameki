@@ -7,10 +7,10 @@ const Paths = {
   base: "/",
   getAbout: (shopPath: string) => `${shopPath}/about`,
   getGreet: (shopPath: string) => `${shopPath}/greet`,
-  getOrder: (shopPath: string) => `${shopPath}/order`,
+  getShoppingList: (shopPath: string) => `${shopPath}/shoppingList`,
   greet: `/:${PathVariable.ShopId}/greet`,
-  order: `/:${PathVariable.ShopId}/order`,
   shop: `/:${PathVariable.ShopId}`,
+  shoppingList: `/:${PathVariable.ShopId}/shoppingList`,
   shops: "/shops",
   siteTree: "/siteTree",
 };

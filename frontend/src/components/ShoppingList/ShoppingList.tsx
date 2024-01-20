@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 import getOrderMessage from "./getOrderMessage";
 
-const ShoppingListOrder = () => {
+const ShoppingList = () => {
   const selectedToOrder = useSelector(shoppingListSelectedToOrderSelector);
   const totalCost = useSelector(shoppingListTotalCostSelector);
 
@@ -48,4 +48,4 @@ const ShoppingListOrder = () => {
   );
 };
 
-export default ShoppingListOrder;
+export default ShoppingList;
