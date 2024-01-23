@@ -230,5 +230,7 @@ module.exports = {
       { "blankLine": "always", "prev": "*", "next": "return" },
       { "blankLine": "any", "prev": "export", "next": "export" },
     ],
+    // node
+    "node/no-missing-import": "off",
   },
 };
