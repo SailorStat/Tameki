@@ -7,6 +7,10 @@ const folders = fs
 
 module.exports = {
   root: true,
+  env: {
+    node: true,
+    jest: true,
+  },
   settings: {
     react: {
       version: "detect",
@@ -35,9 +39,6 @@ module.exports = {
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
     ecmaVersion: "latest",
     sourceType: "module",
     tsconfigRootDir: __dirname,
@@ -82,13 +83,7 @@ module.exports = {
   rules: {
     // common
     "jsx-a11y/no-autofocus": 0,
-    "brace-style": [
-      "error",
-      "1tbs",
-      {
-        allowSingleLine: false,
-      },
-    ],
+    "brace-style": ["error", "1tbs", { allowSingleLine: false}],
     curly: "error",
     "no-debugger": "error",
     "curly": ["error", "all"],
@@ -232,5 +227,6 @@ module.exports = {
     ],
     // node
     "node/no-missing-import": "off",
+    "node/no-unpublished-import": "off",
   },
 };
