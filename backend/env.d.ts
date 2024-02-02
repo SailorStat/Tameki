@@ -1,7 +1,0 @@
-/* eslint-disable */
-namespace NodeJS {
-  interface ProcessEnv {
-    DB_URL: string;
-    PORT: number;
-  }
-}

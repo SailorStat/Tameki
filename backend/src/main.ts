@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 
-import AppModule from "./app/app.module";
+import AppModule from "./app.module";
 
 async function start() {
   const port = process.env.PORT || 3000;

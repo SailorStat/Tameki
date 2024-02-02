@@ -1,5 +1,4 @@
-import fileService from "../fileService";
-import generateProductArticle from "../generateProductArticle";
+import generateProductArticle from "./generateProductArticle";
 
 class ProductService {
   create = async () => {
