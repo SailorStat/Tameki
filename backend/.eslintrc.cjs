@@ -87,6 +87,7 @@ module.exports = {
     curly: "error",
     "no-debugger": "error",
     "curly": ["error", "all"],
+    "object-shorthand": ["error", "always"],
     "eqeqeq": ["error", "always"],
     "logical-assignment-operators": ["error", "always", { enforceForIfStatements: true }],
     "no-lonely-if": "error",

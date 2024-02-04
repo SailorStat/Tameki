@@ -2,8 +2,8 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { SequelizeModule } from "@nestjs/sequelize";
 
-import Product from "./product/product.model";
-import { ProductModule } from "./product/product.module";
+import { Product } from "./entities/product/product.model";
+import { ProductModule } from "./entities/product/product.module";
 
 @Module({
   controllers: [],
@@ -23,4 +23,4 @@ import { ProductModule } from "./product/product.module";
   ],
   providers: [],
 })
-export default class AppModule {}
+export class AppModule {}
