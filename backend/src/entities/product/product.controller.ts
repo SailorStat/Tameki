@@ -1,9 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { SoftDeleteDeleteDto } from "src/entities/softDelete/dto/softDelete.delete.dto";
 
-import CreateProductDto from "./dto/createProduct.dto";
+import CreateProductDto from "./dto/create-product.dto";
+import GetAllProductDto from "./dto/get-all-product..dto";
+import GetProductDto from "./dto/get-product..dto";
+import UpdateProductDto from "./dto/update-product.dto";
 import { PRODUCT_BASE_URL, URL_PRODUCT_ID_PARAM } from "./product.constants";
-import { Product } from "./product.model";
+import { Product } from "./product.entity";
 import { ProductService } from "./product.service";
 
 @ApiTags("Товары")
@@ -12,17 +16,16 @@ export class ProductController {
   constructor(private productService: ProductService) {}
 
   @ApiOperation({ description: "Получить список всех доступных товаров", summary: "Получить все товары" })
-  @ApiResponse({ description: "Успешный поиск товаров", status: 200, type: [Product] })
+  @ApiResponse({ description: "Успешный поиск товаров", status: HttpStatus.OK, type: [Product] })
   @Get()
-  async getAll() {
-    const product = await this.productService.getAll();
+  async getAll(@Query() getProductsDto: GetAllProductDto) {
+    const product = await this.productService.getAll(getProductsDto);
 
     return product;
   }
 
   @ApiOperation({ description: "Создать товар", summary: "Создать товар" })
-  @ApiResponse({ description: "Успешное создание товара", status: 201, type: Product })
-  @UsePipes(ValidationPipe)
+  @ApiResponse({ description: "Успешное создание товара", status: HttpStatus.CREATED, type: Product })
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
     const product = await this.productService.create(createProductDto);
@@ -31,34 +34,29 @@ export class ProductController {
   }
 
   @ApiOperation({ description: "Получить товар", summary: "Получить товар" })
-  @ApiResponse({ description: "Успешный поиск товаров", status: 200, type: Product })
+  @ApiResponse({ description: "Успешный поиск товаров", status: HttpStatus.OK, type: Product })
   @Get(`/:${URL_PRODUCT_ID_PARAM}`)
-  async getOne(@Param(URL_PRODUCT_ID_PARAM) productId: string) {
-    const product = await this.productService.getOne(productId);
+  async getOne(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Query() getProductDto: GetProductDto) {
+    const product = await this.productService.getOne(productId, getProductDto);
 
     return product;
   }
 
   @ApiOperation({ description: "Редактировать товар", summary: "Редактировать товар" })
-  @ApiResponse({ description: "Успешное редактирование товара", status: 200, type: Product })
+  @ApiResponse({ description: "Успешное редактирование товара", status: HttpStatus.OK, type: Product })
   @Patch(`/:${URL_PRODUCT_ID_PARAM}`)
-  async update(@Param(URL_PRODUCT_ID_PARAM) productId: string) {
-    const updatedProduct = await this.productService.update();
+  async update(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Body() updateProductDto: UpdateProductDto) {
+    const updatedProduct = await this.productService.update(productId, updateProductDto);
 
     return updatedProduct;
   }
 
   @ApiOperation({ description: "Удалить товар", summary: "Удалить товар" })
-  @ApiResponse({ description: "Успешное удаление товара", status: 200, type: () => ({ message: "OK" }) })
+  @ApiResponse({ description: "Успешное удаление товара", status: HttpStatus.OK })
   @Delete(`/:${URL_PRODUCT_ID_PARAM}`)
-  async delete(req: any, res: any) {
-    try {
-      const productId = req.params[URL_PRODUCT_ID_PARAM];
-      const product = await this.productService.delete(productId);
+  async delete(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Body() deleteProductDto: SoftDeleteDeleteDto) {
+    const product = await this.productService.delete(productId, deleteProductDto);
 
-      return res.json(product);
-    } catch (error) {
-      res.status(500).json(error.message);
-    }
+    return product;
   }
 }

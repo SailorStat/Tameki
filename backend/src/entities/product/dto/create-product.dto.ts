@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
-import { IsArray, IsNumber, IsString } from "src/validationDecorators";
+import { IsArray, IsInt, IsString } from "src/validationDecorators";
 
 export default class CreateProductDto {
   @ApiProperty({ description: "Артикул продавца", example: "a12s38", required: false })
@@ -18,7 +18,7 @@ export default class CreateProductDto {
   readonly images: string[];
 
   @ApiProperty({ description: "Количество штук в наличии", example: 15 })
-  @IsNumber()
+  @IsInt()
   readonly inStock: number;
 
   @ApiProperty({ description: "Ключевые слова", example: ["новый", "распродажа"] })
@@ -27,11 +27,12 @@ export default class CreateProductDto {
   readonly labels: string[];
 
   @ApiProperty({ description: "Цена", example: 99 })
-  @IsNumber()
+  @IsInt()
   readonly price: number;
 
   @ApiProperty({ description: "Причина скрытия товара", example: "Черновик товара", required: false })
   @IsString()
+  @IsOptional()
   readonly reasonHiding?: string;
 
   @ApiProperty({ description: "Название товара", example: "Пример продукта" })

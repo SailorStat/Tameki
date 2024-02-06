@@ -1,23 +1,28 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { SequelizeModule } from "@nestjs/sequelize";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { Product } from "./entities/product/product.model";
 import { ProductModule } from "./entities/product/product.module";
 
 @Module({
   controllers: [],
   imports: [
     ConfigModule.forRoot({ envFilePath: `${process.env.NODE_ENV === "development" ? ".development" : ""}.env` }),
-    SequelizeModule.forRoot({
-      autoLoadModels: true,
-      database: process.env.POSTGRES_DB,
-      dialect: "postgres",
-      host: process.env.POSTGRES_HOST,
-      models: [Product],
-      password: process.env.POSTGRES_PASSWORD,
-      port: +process.env.POSTGRES_PORT,
-      username: process.env.POSTGRES_USER,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        autoLoadEntities: true,
+        database: config.get<string>("POSTGRES_DB"),
+        entities: [__dirname, "dist/**/*.entity.ts"],
+        host: config.get<string>("POSTGRES_HOST"),
+        logging: true,
+        password: config.get<string>("POSTGRES_PASSWORD"),
+        port: config.get<number>("POSTGRES_PORT"),
+        synchronize: true,
+        type: "postgres",
+        username: config.get<string>("POSTGRES_USER"),
+      }),
     }),
     ProductModule,
   ],

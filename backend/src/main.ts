@@ -8,6 +8,8 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   const app = await NestFactory.create(AppModule);
 
+  app.useGlobalPipes(new ValidationPipe());
+
   const config = new DocumentBuilder()
     .setTitle("Sailor Friends API")
     .setDescription("Документация для API маркетплейса Sailor Friends")

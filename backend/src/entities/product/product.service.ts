@@ -1,37 +1,53 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { SoftDeleteDeleteDto } from "src/entities/softDelete/dto/softDelete.delete.dto";
+import { SoftDeleteGetDto } from "src/entities/softDelete/dto/softDelete.get.dto";
+import { SoftDeleteGetAllDto } from "src/entities/softDelete/dto/softDelete.getAll.dto";
+import { SoftDeleteService } from "src/entities/softDelete/softDelete.service";
+import { Repository } from "typeorm";
 
-import CreateProductDto from "./dto/createProduct.dto";
-import { Product } from "./product.model";
+import CreateProductDto from "./dto/create-product.dto";
+import UpdateProductDto from "./dto/update-product.dto";
+import { Product } from "./product.entity";
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel(Product) private readonly productRepository: typeof Product) {}
+  softDeleteService: SoftDeleteService<Product>;
 
-  getAll = async () => {
-    return this.productRepository.findAll();
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {
+    this.softDeleteService = new SoftDeleteService(productRepository);
+  }
+
+  getAll = async (softDeleteGetAllDto: SoftDeleteGetAllDto): Promise<Product[]> => {
+    const { page = 1, limit = 20, ...params } = softDeleteGetAllDto;
+
+    return this.softDeleteService.getAll({ limit, page, ...params });
   };
 
-  getOne = async (productId: string) => {
-    // return await this.productRepository.({ id: productId });
+  getOne = async (productId: number, softDeleteGetDto: SoftDeleteGetDto): Promise<Product> => {
+    return this.softDeleteService.getOne(productId, softDeleteGetDto);
   };
 
   create = async (createProductDto: CreateProductDto) => {
-    return this.productRepository.create(createProductDto);
+    const createdProduct = this.productRepository.create(createProductDto);
+
+    return this.productRepository.save(createdProduct);
   };
 
-  update = async () => {
-    // if (!product.id) {
-    //   throw new Error("ID продукта не указан");
-    // }
-    // return await ProductModel.findByIdAndUpdate(product.id, product, { new: true });
-  };
+  update = async (productId: number, updateProductDto: UpdateProductDto) => {
+    const product = await this.productRepository.findOne({ where: { id: productId } });
 
-  delete = async (productId?: string) => {
-    if (!productId) {
-      throw new Error("ID продукта не указан");
+    if (!product) {
+      throw new HttpException("Товар не найден", HttpStatus.BAD_REQUEST);
     }
 
-    // return await ProductModel.findByIdAndDelete(productId);
+    return this.productRepository.update(productId, updateProductDto);
+  };
+
+  delete = async (productId: number, deletableDto: SoftDeleteDeleteDto) => {
+    return this.softDeleteService.delete(productId, deletableDto);
   };
 }
