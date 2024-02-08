@@ -1,6 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { FindManyOptions, FindOneOptions, Repository } from "typeorm";
+import { Injectable } from "@nestjs/common";
+import { assertFoundEntity } from "src/asserts/http.assert";
+import { Repository } from "typeorm";
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.d";
 
+import assertDeletedEntity from "./asserts/deletedEntity.assert";
 import { SoftDeleteDeleteDto } from "./dto/softDelete.delete.dto";
 import { SoftDeleteGetDto } from "./dto/softDelete.get.dto";
 import { SoftDeleteGetAllDto } from "./dto/softDelete.getAll.dto";
@@ -11,65 +14,72 @@ export class SoftDeleteService<Entity extends SoftDeleteEntity> {
   constructor(private readonly repository: Repository<Entity>) {}
 
   async getAll({ page, limit, searchDeleted }: SoftDeleteGetAllDto): Promise<Entity[]> {
-    const findOptions: FindManyOptions<Entity> = {
-      skip: (page - 1) * limit,
-      take: limit,
-      where: {},
-    };
+    const queryBuilder = this.repository.createQueryBuilder("entity");
 
-    if (!searchDeleted) {
-      findOptions.where = { deletionReason: null };
+    if (searchDeleted) {
+      queryBuilder.withDeleted();
     }
 
-    return this.repository.find(findOptions);
+    return queryBuilder
+      .offset((page - 1) * limit)
+      .limit(limit)
+      .getMany();
   }
 
-  async getOne(id: number, { searchDeleted }: SoftDeleteGetDto): Promise<Entity> {
-    const findOptions: FindOneOptions<Entity> = { where: {} };
+  async getOne(entityId: number, { searchDeleted }: SoftDeleteGetDto): Promise<Entity> {
+    const queryBuilder = this.repository.createQueryBuilder("entity").where("entity.id = :entityId", { entityId });
 
-    if (!searchDeleted) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore adsfas
-      findOptions.where.deletionReason = null;
+    if (searchDeleted) {
+      queryBuilder.withDeleted();
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore adsfas
-    return this.repository.findOne({ where: { id } });
+    const entity = await queryBuilder.getOne();
+
+    assertFoundEntity(entity);
+
+    return entity;
   }
 
-  async delete(id: number, { deletionReason }: SoftDeleteDeleteDto) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore adsfas
-    const entity = await this.repository.findOne(id);
+  async delete(entityId: number, { deletionReason }: SoftDeleteDeleteDto) {
+    await this.getOne(entityId, {});
 
-    if (!entity) {
-      throw new HttpException("Сущность не найдена", HttpStatus.BAD_REQUEST);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore adsfas
-    await this.repository.update(id, { deleteAt: new Date(), deletionReason });
+    await this.repository
+      .createQueryBuilder()
+      .update()
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      .set({ deletedAt: new Date(), deletionReason } as unknown as QueryDeepPartialEntity<Entity>)
+      .where("id = :entityId", { entityId })
+      .execute();
 
     return { message: "OK" };
   }
 
-  async restore(id: number): Promise<Entity> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore adsfas
-    const entity = await this.repository.findOne(id);
+  async restore(entityId: number): Promise<Entity> {
+    const entity = await this.repository
+      .createQueryBuilder("entity")
+      .withDeleted()
+      .addSelect(["entity.deletedAt", "entity.deletionReason"])
+      .where("entity.id = :entityId", { entityId })
+      .getOne();
 
-    if (!entity) {
-      throw new HttpException("Сущность не найдена", HttpStatus.BAD_REQUEST);
-    }
+    assertFoundEntity(entity);
+    assertDeletedEntity(entity);
 
-    if (!entity.deletedAt || !entity.deletionReason) {
-      throw new HttpException("Запись не была удалена или отсутствует причина удаления", HttpStatus.BAD_REQUEST);
-    }
+    await this.repository
+      .createQueryBuilder("entity")
+      .update()
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      .set({ deletedAt: null, deletionReason: null } as unknown as QueryDeepPartialEntity<Entity>)
+      .where("entity.id = :entityId", { entityId })
+      .execute();
 
-    entity.deletionReason = null;
-    entity.deletedAt = null;
+    const updatedEntity = await this.repository
+      .createQueryBuilder("entity")
+      .where("entity.id = :entityId", { entityId })
+      .getOne();
 
-    return this.repository.save(entity);
+    assertFoundEntity(updatedEntity);
+
+    return updatedEntity;
   }
 }

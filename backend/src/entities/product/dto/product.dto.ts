@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsOptional } from "class-validator";
-import { IsArray, IsInt, IsString } from "src/validationDecorators";
+import { IsArray, IsInt, IsString } from "src/validation/check";
 
 export default class ProductDto {
   @ApiProperty({ description: "Артикул продавца", example: "a12s38", required: false })
@@ -27,7 +27,7 @@ export default class ProductDto {
 
   @ApiProperty({ description: "Уникальный идентификатор товара", example: "31241" })
   @IsString()
-  readonly id: string;
+  readonly id: number;
 
   @ApiProperty({ description: "Изображения товара", example: ["image1.jpg", "image2.jpg"] })
   @IsString({ each: true })

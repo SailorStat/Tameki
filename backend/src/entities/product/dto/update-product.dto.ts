@@ -1,62 +1,53 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsOptional } from "class-validator";
-import { IsArray, IsInt, IsString } from "src/validationDecorators";
+import { PartialType, PickType } from "@nestjs/swagger";
+import { IsOptional } from "class-validator";
 
-export default class UpdateProductDto {
-  @ApiProperty({ description: "Артикул продавца", example: "a12s38", required: false })
-  @IsString()
-  @IsOptional()
-  readonly article?: string;
+import ProductDto from "./product.dto";
 
-  @ApiProperty({ description: "Описание товара", example: "Очень хороший товар, купили всей семьёй", required: false })
-  @IsString()
+export default class UpdateProductDto extends PartialType(
+  PickType(ProductDto, [
+    "article",
+    "description",
+    "estimation",
+    "favorites",
+    "hidingReason",
+    "images",
+    "inStock",
+    "labels",
+    "price",
+    "soldTimes",
+    "title",
+  ]),
+) {
   @IsOptional()
-  readonly description?: string;
+  article?: ProductDto["article"];
 
-  @ApiProperty({ description: "Средняя оценка товара", example: 85, required: false })
-  @IsInt()
   @IsOptional()
-  readonly estimation?: number;
+  description?: ProductDto["description"];
 
-  @ApiProperty({ description: "Находится в избранном", example: true, required: false })
-  @IsBoolean()
   @IsOptional()
-  readonly favorites?: boolean;
+  estimation?: ProductDto["estimation"];
 
-  @ApiProperty({ description: "Изображения товара", example: ["image1.jpg", "image2.jpg"], required: false })
-  @IsString({ each: true })
-  @IsArray()
   @IsOptional()
-  readonly images?: string[];
+  favorites?: ProductDto["favorites"];
 
-  @ApiProperty({ description: "Количество штук в наличии", example: 15, required: false })
-  @IsInt()
   @IsOptional()
-  readonly inStock?: number;
+  hidingReason?: ProductDto["hidingReason"];
 
-  @ApiProperty({ description: "Ключевые слова", example: ["новый", "распродажа"], required: false })
-  @IsString({ each: true })
-  @IsArray()
   @IsOptional()
-  readonly labels?: string[];
+  images?: ProductDto["images"];
 
-  @ApiProperty({ description: "Цена", example: 99, required: false })
-  @IsInt()
   @IsOptional()
-  readonly price?: number;
+  inStock?: ProductDto["inStock"];
 
-  @ApiProperty({ description: "Количество продаж", example: 60, required: false })
-  @IsInt()
   @IsOptional()
-  readonly soldTimes?: number;
+  labels?: ProductDto["labels"];
 
-  @ApiProperty({ description: "Причина скрытия товара", example: "Черновик товара", required: false })
-  @IsString()
   @IsOptional()
-  readonly reasonHiding?: string;
+  price?: ProductDto["price"];
 
-  @ApiProperty({ description: "Название товара", example: "Пример продукта", required: false })
-  @IsString()
   @IsOptional()
-  readonly title?: string;
+  soldTimes?: ProductDto["soldTimes"];
+
+  @IsOptional()
+  title?: ProductDto["title"];
 }

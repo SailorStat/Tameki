@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
-import { IsBoolean } from "src/validationDecorators";
+import { IsBoolean } from "src/validation/check";
+import { TransformBoolean } from "src/validation/transform/transformBoolean";
 
 export class SoftDeleteGetDto {
   @ApiProperty({
@@ -11,5 +12,6 @@ export class SoftDeleteGetDto {
   })
   @IsBoolean()
   @IsOptional()
+  @TransformBoolean()
   searchDeleted?: boolean;
 }

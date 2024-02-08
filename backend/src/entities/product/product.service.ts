@@ -32,9 +32,13 @@ export class ProductService {
   };
 
   create = async (createProductDto: CreateProductDto) => {
-    const createdProduct = this.productRepository.create(createProductDto);
+    const toCreateProduct = this.productRepository.create(createProductDto);
+    const createdProduct = await this.productRepository.save(toCreateProduct);
 
-    return this.productRepository.save(createdProduct);
+    return this.productRepository
+      .createQueryBuilder("product")
+      .where("product.id = :productId", { productId: createdProduct.id })
+      .getOne();
   };
 
   update = async (productId: number, updateProductDto: UpdateProductDto) => {
@@ -49,5 +53,9 @@ export class ProductService {
 
   delete = async (productId: number, deletableDto: SoftDeleteDeleteDto) => {
     return this.softDeleteService.delete(productId, deletableDto);
+  };
+
+  restore = async (productId: number) => {
+    return this.softDeleteService.restore(productId);
   };
 }
