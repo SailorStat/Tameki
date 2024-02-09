@@ -1,6 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsBoolean, IsNumber, IsString } from "class-validator";
 import { SoftDeleteEntity } from "src/entities/softDelete/softDelete.entity";
+import { TransformBoolean } from "src/validation/transform/transformBoolean";
+import { TransformJSON } from "src/validation/transform/transformJSON";
+import { TransformNumber } from "src/validation/transform/transformNumber";
 import { Column, Entity } from "typeorm";
 
 @Entity()
@@ -18,11 +21,13 @@ export class Product extends SoftDeleteEntity {
   @ApiProperty({ description: "Средняя оценка товара", example: 80 })
   @IsNumber()
   @Column({ default: 0 })
+  @TransformNumber()
   estimation: number;
 
   @ApiProperty({ default: false, description: "Избранное", example: true })
   @IsBoolean()
   @Column({ default: false })
+  @TransformBoolean()
   favorites: boolean;
 
   @ApiProperty({ description: "Причина скрытия товара", example: "Черновик товара" })
@@ -38,26 +43,31 @@ export class Product extends SoftDeleteEntity {
   @ApiProperty({ description: "Количество штук в наличии", example: 15 })
   @IsNumber()
   @Column({ default: 0, nullable: false })
+  @TransformNumber()
   inStock: number;
 
   @ApiProperty({ description: "Ключевые слова", example: ["новый", "распродажа"] })
   @IsArray()
   @Column("simple-array", { nullable: true })
+  @TransformJSON()
   labels: string[];
 
   @ApiProperty({ description: "Цена", example: 99 })
   @IsNumber()
   @Column({ nullable: false })
+  @TransformNumber()
   price: number;
 
   @ApiProperty({ description: "Отзывы", example: 20 })
   @IsNumber()
   @Column({ default: 0 })
+  @TransformNumber()
   reviews: number;
 
   @ApiProperty({ description: "Продано количество раз", example: 50 })
   @IsNumber()
   @Column({ default: 0 })
+  @TransformNumber()
   soldTimes: number;
 
   @ApiProperty({ description: "Название товара", example: "Пример продукта" })

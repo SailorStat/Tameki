@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Column, DeleteDateColumn, Entity } from "typeorm";
 
-import { BaseEntity } from "../base.entity";
+import { BaseEntity } from "../base/base.entity";
 
 @Entity()
 export class SoftDeleteEntity extends BaseEntity {

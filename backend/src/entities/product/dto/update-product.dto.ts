@@ -1,15 +1,14 @@
 import { PartialType, PickType } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 
-import ProductDto from "./product.dto";
+import { Product } from "../product.entity";
 
 export default class UpdateProductDto extends PartialType(
-  PickType(ProductDto, [
+  PickType(Product, [
     "article",
     "description",
     "estimation",
     "favorites",
-    "hidingReason",
     "images",
     "inStock",
     "labels",
@@ -19,35 +18,35 @@ export default class UpdateProductDto extends PartialType(
   ]),
 ) {
   @IsOptional()
-  article?: ProductDto["article"];
+  article?: Product["article"];
 
   @IsOptional()
-  description?: ProductDto["description"];
+  description?: Product["description"];
 
   @IsOptional()
-  estimation?: ProductDto["estimation"];
+  estimation?: Product["estimation"];
 
   @IsOptional()
-  favorites?: ProductDto["favorites"];
+  favorites?: Product["favorites"];
 
   @IsOptional()
-  hidingReason?: ProductDto["hidingReason"];
+  hidingReason?: Product["hidingReason"];
 
   @IsOptional()
-  images?: ProductDto["images"];
+  images?: Product["images"];
 
   @IsOptional()
-  inStock?: ProductDto["inStock"];
+  inStock?: Product["inStock"];
 
   @IsOptional()
-  labels?: ProductDto["labels"];
+  labels?: Product["labels"];
 
   @IsOptional()
-  price?: ProductDto["price"];
+  price?: Product["price"];
 
   @IsOptional()
-  soldTimes?: ProductDto["soldTimes"];
+  soldTimes?: Product["soldTimes"];
 
   @IsOptional()
-  title?: ProductDto["title"];
+  title?: Product["title"];
 }

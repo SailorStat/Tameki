@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { ImageModule } from "./entities/image/image.module";
 import { ProductModule } from "./entities/product/product.module";
 
 @Module({
@@ -25,6 +26,7 @@ import { ProductModule } from "./entities/product/product.module";
       }),
     }),
     ProductModule,
+    ImageModule,
   ],
   providers: [],
 })

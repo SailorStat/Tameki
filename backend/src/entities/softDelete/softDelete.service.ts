@@ -1,32 +1,48 @@
 import { Injectable } from "@nestjs/common";
 import { assertFoundEntity } from "src/asserts/http.assert";
-import { Repository } from "typeorm";
+import { DeepPartial } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.d";
 
+import { BaseEntity } from "../base/base.entity";
+import { BaseService } from "../base/base.service";
 import assertDeletedEntity from "./asserts/deletedEntity.assert";
-import { SoftDeleteDeleteDto } from "./dto/softDelete.delete.dto";
-import { SoftDeleteGetDto } from "./dto/softDelete.get.dto";
-import { SoftDeleteGetAllDto } from "./dto/softDelete.getAll.dto";
-import { SoftDeleteEntity } from "./softDelete.entity";
+import { SoftDeleteDeleteDto } from "./dto/delete-soft-delete.dto";
+import { SoftDeleteGetAllDto } from "./dto/get-all-soft-delete.dto";
+import { SoftDeleteGetDto } from "./dto/get-soft-delete.dto";
 
 @Injectable()
-export class SoftDeleteService<Entity extends SoftDeleteEntity> {
-  constructor(private readonly repository: Repository<Entity>) {}
-
+export class SoftDeleteService<
+  Entity extends BaseEntity,
+  CreateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
+  UpdateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
+> extends BaseService<Entity, SoftDeleteGetAllDto, SoftDeleteGetDto, CreateDto, UpdateDto> {
   async getAll({ page, limit, searchDeleted }: SoftDeleteGetAllDto): Promise<Entity[]> {
     const queryBuilder = this.repository.createQueryBuilder("entity");
+
+    searchDeleted && queryBuilder.withDeleted();
+
+    return queryBuilder
+      .offset((page - 1) * limit)
+      .limit(limit)
+      .orderBy("entity.id")
+      .getMany();
+  }
+
+  async getByParams({ searchDeleted, ...params }: Partial<Entity & SoftDeleteGetDto>): Promise<Entity> {
+    const queryBuilder = this.repository.createQueryBuilder("entity").where(params);
 
     if (searchDeleted) {
       queryBuilder.withDeleted();
     }
 
-    return queryBuilder
-      .offset((page - 1) * limit)
-      .limit(limit)
-      .getMany();
+    const entity = await queryBuilder.getOne();
+
+    assertFoundEntity(entity);
+
+    return entity;
   }
 
-  async getOne(entityId: number, { searchDeleted }: SoftDeleteGetDto): Promise<Entity> {
+  async getById(entityId: Entity["id"], { searchDeleted }: SoftDeleteGetDto): Promise<Entity> {
     const queryBuilder = this.repository.createQueryBuilder("entity").where("entity.id = :entityId", { entityId });
 
     if (searchDeleted) {
@@ -40,8 +56,8 @@ export class SoftDeleteService<Entity extends SoftDeleteEntity> {
     return entity;
   }
 
-  async delete(entityId: number, { deletionReason }: SoftDeleteDeleteDto) {
-    await this.getOne(entityId, {});
+  async delete(entityId: Entity["id"], { deletionReason }: SoftDeleteDeleteDto) {
+    await this.getById(entityId, {});
 
     await this.repository
       .createQueryBuilder()
@@ -54,7 +70,7 @@ export class SoftDeleteService<Entity extends SoftDeleteEntity> {
     return { message: "OK" };
   }
 
-  async restore(entityId: number): Promise<Entity> {
+  async restore(entityId: Entity["id"]): Promise<Entity> {
     const entity = await this.repository
       .createQueryBuilder("entity")
       .withDeleted()
@@ -73,10 +89,7 @@ export class SoftDeleteService<Entity extends SoftDeleteEntity> {
       .where("entity.id = :entityId", { entityId })
       .execute();
 
-    const updatedEntity = await this.repository
-      .createQueryBuilder("entity")
-      .where("entity.id = :entityId", { entityId })
-      .getOne();
+    const updatedEntity = await this.getById(entityId, {});
 
     assertFoundEntity(updatedEntity);
 

@@ -7,7 +7,7 @@ export class BaseEntity {
   @ApiProperty({ description: "Уникальный идентификатор", example: 1223233, readOnly: true, uniqueItems: true })
   @PrimaryGeneratedColumn()
   @TransformNumber()
-  id: number;
+  id: number | string;
 
   @ApiProperty({ description: "Дата создания" })
   @CreateDateColumn({ default: () => "CURRENT_TIMESTAMP", type: "timestamp" })

@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { SoftDeleteDeleteDto } from "src/entities/softDelete/dto/softDelete.delete.dto";
+import { SoftDeleteDeleteDto } from "src/entities/softDelete/dto/delete-soft-delete.dto";
 
 import CreateProductDto from "./dto/create-product.dto";
 import GetAllProductsDto from "./dto/get-all-products.dto";
+import GetProductByParamsDto from "./dto/get-by-params-product..dto";
 import GetProductDto from "./dto/get-product..dto";
 import UpdateProductDto from "./dto/update-product.dto";
 import { PRODUCT_BASE_URL, URL_PRODUCT_ID_PARAM } from "./product.constants";
@@ -35,9 +36,18 @@ export class ProductController {
 
   @ApiOperation({ description: "Получить товар", summary: "Получить товар" })
   @ApiResponse({ description: "Успешный поиск товаров", status: HttpStatus.OK, type: Product })
+  @Get("/product")
+  async getByParams(@Query() getProductDto: GetProductByParamsDto) {
+    const product = await this.productService.getByParams(getProductDto);
+
+    return product;
+  }
+
+  @ApiOperation({ description: "Получить товар", summary: "Получить товар" })
+  @ApiResponse({ description: "Успешный поиск товаров", status: HttpStatus.OK, type: Product })
   @Get(`/:${URL_PRODUCT_ID_PARAM}`)
-  async getOne(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Query() getProductDto: GetProductDto) {
-    const product = await this.productService.getOne(productId, getProductDto);
+  async getById(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Query() getProductDto: GetProductDto) {
+    const product = await this.productService.getById(productId, getProductDto);
 
     return product;
   }
