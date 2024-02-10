@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { SoftDeleteDeleteDto } from "src/entities/softDelete/dto/delete-soft-delete.dto";
+import { SoftDeleteDeleteDto } from "src/entities/soft-delete/dto/delete-soft-delete.dto";
 
 import CreateProductDto from "./dto/create-product.dto";
 import GetAllProductsDto from "./dto/get-all-products.dto";

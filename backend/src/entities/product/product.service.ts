@@ -1,17 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseGetAllDto } from "src/entities/base/dto/get-all-base.dto";
-import { SoftDeleteDeleteDto } from "src/entities/softDelete/dto/delete-soft-delete.dto";
-import { SoftDeleteGetDto } from "src/entities/softDelete/dto/get-soft-delete.dto";
-import { SoftDeleteService } from "src/entities/softDelete/softDelete.service";
+import { SoftDeleteDeleteDto } from "src/entities/soft-delete/dto/delete-soft-delete.dto";
+import { SoftDeleteGetDto } from "src/entities/soft-delete/dto/get-soft-delete.dto";
+import { SoftDeleteService } from "src/entities/soft-delete/soft-delete.service";
 import { Repository } from "typeorm";
 
 import { BaseService } from "../base/base.service";
 import CreateProductDto from "./dto/create-product.dto";
 import UpdateProductDto from "./dto/update-product.dto";
 import { Product } from "./product.entity";
-
-type ProductId = Product["id"];
 
 @Injectable()
 export class ProductService extends BaseService<
@@ -41,15 +39,15 @@ export class ProductService extends BaseService<
     return this.softDeleteService.getByParams(getProductDto);
   };
 
-  getById = async (productId: ProductId, softDeleteGetDto: SoftDeleteGetDto): Promise<Product> => {
+  getById = async (productId: number, softDeleteGetDto: SoftDeleteGetDto): Promise<Product> => {
     return this.softDeleteService.getById(productId, softDeleteGetDto);
   };
 
-  delete = async (productId: ProductId, deletableDto: SoftDeleteDeleteDto) => {
+  delete = async (productId: number, deletableDto: SoftDeleteDeleteDto) => {
     return this.softDeleteService.delete(productId, deletableDto);
   };
 
-  restore = async (productId: ProductId) => {
+  restore = async (productId: number) => {
     return this.softDeleteService.restore(productId);
   };
 }

@@ -1,9 +1,10 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { MulterModule } from "@nestjs/platform-express";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { ImageModule } from "./entities/image/image.module";
 import { ProductModule } from "./entities/product/product.module";
+import { ProductImageModule } from "./entities/product-image/product-image.module";
 
 @Module({
   controllers: [],
@@ -25,8 +26,9 @@ import { ProductModule } from "./entities/product/product.module";
         username: config.get<string>("POSTGRES_USER"),
       }),
     }),
+    MulterModule.register({ dest: process.env.UPLOADS_PATH }),
     ProductModule,
-    ImageModule,
+    ProductImageModule,
   ],
   providers: [],
 })

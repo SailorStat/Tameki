@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 
-import { SoftDeleteEntity } from "../softDelete.entity";
+import { SoftDeleteEntity } from "../soft-delete.entity";
 
 class DeletedSoftDeleteEntity extends SoftDeleteEntity {
   deletedAt: Date;

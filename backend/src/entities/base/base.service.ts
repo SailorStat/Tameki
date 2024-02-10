@@ -7,15 +7,13 @@ import { BaseEntity } from "../base/base.entity";
 import { BaseGetAllDto } from "./dto/get-all-base.dto";
 import { BaseGetDto } from "./dto/get-base.dto";
 
-type EntityId = BaseEntity["id"];
-
 @Injectable()
 export class BaseService<
   Entity extends BaseEntity,
   GetAllDto extends DeepPartial<BaseGetAllDto> = DeepPartial<BaseGetAllDto>,
   GetDto extends DeepPartial<BaseGetDto> = DeepPartial<BaseGetDto>,
   CreateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
-  UpdateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
+  UpdateDto = object,
 > {
   constructor(protected readonly repository: Repository<Entity>) {}
 
@@ -23,7 +21,6 @@ export class BaseService<
     const queryBuilder = this.repository.createQueryBuilder("entity").where(params);
 
     page && limit && queryBuilder.offset((page - 1) * limit).limit(limit);
-
     orderBy && queryBuilder.orderBy(orderBy);
 
     return queryBuilder.getMany();
@@ -37,7 +34,7 @@ export class BaseService<
     return entity;
   }
 
-  async getById(entityId: EntityId, params: Partial<GetDto>): Promise<Entity> {
+  async getById(entityId: number, params: Partial<GetDto>): Promise<Entity> {
     const entity = await this.repository
       .createQueryBuilder("entity")
       .where("entity.id = :entityId", { entityId })
@@ -59,7 +56,7 @@ export class BaseService<
       .getOne();
   };
 
-  update = async (entityId: EntityId, updateDto: UpdateDto): Promise<Entity> => {
+  update = async (entityId: number, updateDto: UpdateDto): Promise<Entity> => {
     await this.getById(entityId, {});
 
     await this.repository
@@ -73,7 +70,7 @@ export class BaseService<
     return this.getById(entityId, {});
   };
 
-  async delete(entityId: EntityId, _: object) {
+  async delete(entityId: number, _: object) {
     await this.getById(entityId, {});
     await this.repository.createQueryBuilder().delete().where("id = :entityId", { entityId }).execute();
 

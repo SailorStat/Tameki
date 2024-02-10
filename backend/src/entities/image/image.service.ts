@@ -1,49 +1,32 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
-import { BaseGetAllDto } from "src/entities/base/dto/get-all-base.dto";
-import { SoftDeleteDeleteDto } from "src/entities/softDelete/dto/delete-soft-delete.dto";
-import { SoftDeleteGetDto } from "src/entities/softDelete/dto/get-soft-delete.dto";
-import { SoftDeleteService } from "src/entities/softDelete/softDelete.service";
 import { Repository } from "typeorm";
 
-import { BaseService } from "../base/base.service";
-import CreateImageDto from "./dto/create-image.dto";
+import { FileService } from "../file/file.service";
+import { SaveFileReturnType } from "../file/file.types";
 import UpdateImageDto from "./dto/update-image.dto";
 import { Image } from "./image.entity";
 
-type ImageId = Image["id"];
-
 @Injectable()
-export class ImageService extends BaseService<Image, BaseGetAllDto, SoftDeleteGetDto, CreateImageDto, UpdateImageDto> {
-  softDeleteService: SoftDeleteService<Image>;
+export class ImageService extends FileService {
+  FileBuilder = Image;
 
   constructor(
+    @Inject(ConfigService) protected readonly configService: ConfigService,
     @InjectRepository(Image)
     protected readonly repository: Repository<Image>,
   ) {
-    super(repository);
-    this.softDeleteService = new SoftDeleteService(repository);
+    super(configService, repository);
   }
 
-  getAll = async (softDeleteGetAllDto: BaseGetAllDto): Promise<Image[]> => {
-    const { page = 1, limit = 40, ...params } = softDeleteGetAllDto;
+  protected declare createEntity: (file: Express.Multer.File) => Image;
 
-    return this.softDeleteService.getAll({ limit, page, ...params });
-  };
+  declare save: (file: Express.Multer.File) => SaveFileReturnType<Image>;
 
-  getByParams = async (getImageDto: Partial<Image & SoftDeleteGetDto>): Promise<Image> => {
-    return this.softDeleteService.getByParams(getImageDto);
-  };
+  declare getById: (id: number) => Promise<Image>;
 
-  getById = async (imageId: ImageId, softDeleteGetDto: SoftDeleteGetDto): Promise<Image> => {
-    return this.softDeleteService.getById(imageId, softDeleteGetDto);
-  };
+  declare update: (id: number, updateImageDto: UpdateImageDto) => Promise<Image>;
 
-  delete = async (imageId: ImageId, deletableDto: SoftDeleteDeleteDto) => {
-    return this.softDeleteService.delete(imageId, deletableDto);
-  };
-
-  restore = async (imageId: ImageId) => {
-    return this.softDeleteService.restore(imageId);
-  };
+  // Наследующие сервисы должны добавить метод для получения изображений по id связанной сущности
 }

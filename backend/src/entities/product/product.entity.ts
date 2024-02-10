@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsBoolean, IsNumber, IsString } from "class-validator";
-import { SoftDeleteEntity } from "src/entities/softDelete/softDelete.entity";
+import { SoftDeleteEntity } from "src/entities/soft-delete/soft-delete.entity";
 import { TransformBoolean } from "src/validation/transform/transformBoolean";
 import { TransformJSON } from "src/validation/transform/transformJSON";
 import { TransformNumber } from "src/validation/transform/transformNumber";

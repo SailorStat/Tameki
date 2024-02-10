@@ -1,3 +1,3 @@
-import { SoftDeleteGetDto } from "src/entities/softDelete/dto/get-soft-delete.dto";
+import { SoftDeleteGetDto } from "src/entities/soft-delete/dto/get-soft-delete.dto";
 
 export default class GetProductDto extends SoftDeleteGetDto {}

@@ -230,5 +230,6 @@ module.exports = {
     "node/no-missing-import": "off",
     "node/no-unpublished-import": "off",
     "node/no-unsupported-features/es-syntax": "off",
+    "node/no-unsupported-features/node-builtins": "off"
   },
 };

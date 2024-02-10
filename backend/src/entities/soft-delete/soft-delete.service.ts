@@ -5,7 +5,7 @@ import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity
 
 import { BaseEntity } from "../base/base.entity";
 import { BaseService } from "../base/base.service";
-import assertDeletedEntity from "./asserts/deletedEntity.assert";
+import assertDeletedEntity from "./asserts/deleted-entity.assert";
 import { SoftDeleteDeleteDto } from "./dto/delete-soft-delete.dto";
 import { SoftDeleteGetAllDto } from "./dto/get-all-soft-delete.dto";
 import { SoftDeleteGetDto } from "./dto/get-soft-delete.dto";
