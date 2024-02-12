@@ -15,15 +15,28 @@ export class ProductImageService extends ImageService {
 
   constructor(
     @Inject(ConfigService) protected readonly configService: ConfigService,
-    @InjectRepository(ProductImage)
-    protected readonly repository: Repository<ProductImage>,
+    @InjectRepository(ProductImage) protected readonly repository: Repository<ProductImage>,
   ) {
     super(configService, repository);
   }
 
   protected declare createEntity: (file: Express.Multer.File) => ProductImage;
 
-  declare save: (file: Express.Multer.File) => SaveFileReturnType<ProductImage>;
+  save = async (file: Express.Multer.File, productId: number): SaveFileReturnType<ProductImage> => {
+    const uploadsPath = this.configService.get("UPLOADS_PATH");
+    const fileEntity = this.createEntity(file);
+    const filePath = `${uploadsPath}/${fileEntity.url}`;
+
+    fileEntity.productId = productId;
+
+    try {
+      await this.writeWithRetry(filePath, file);
+    } catch (error) {
+      return { errorMessage: error.message };
+    }
+
+    return this.repository.save(fileEntity);
+  };
 
   declare getAll: (getAllProductImageDto: GetAllProductImageDto) => Promise<ProductImage[]>;
 

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { createWriteStream, existsSync, mkdirSync, promises as fsPromises } from "fs";
 import { assertFoundEntity } from "src/asserts/http.assert";
@@ -14,13 +14,13 @@ export class FileService extends BaseService<FileEntity> {
   FileBuilder = FileEntity;
 
   constructor(
-    @Inject(ConfigService) protected readonly configService: ConfigService,
+    protected readonly configService: ConfigService,
     protected readonly repository: Repository<FileEntity>,
   ) {
     super(repository);
   }
 
-  protected createEntity(file: Express.Multer.File): FileEntity {
+  protected createEntity = (file: Express.Multer.File): FileEntity => {
     const fileEntity = new this.FileBuilder();
     const uploadsPath = this.configService.get("UPLOADS_PATH");
 
@@ -29,24 +29,27 @@ export class FileService extends BaseService<FileEntity> {
     }
 
     fileEntity.filename = file.originalname;
-    fileEntity.url = crypto.randomUUID();
 
-    let filePath = `${uploadsPath}/${fileEntity.url}`;
+    const fileExtension = file.originalname.split(".").at(-1);
 
-    while (existsSync(filePath)) {
-      fileEntity.url = crypto.randomUUID();
+    let filePath = "";
+
+    while (!filePath || existsSync(filePath)) {
+      fileEntity.url = `${crypto.randomUUID()}.${fileExtension}`;
       filePath = `${uploadsPath}/${fileEntity.url}`;
     }
 
     return fileEntity;
-  }
+  };
 
-  protected async writeWithRetry(filePath: string, file: Express.Multer.File, retryCount = 3): Promise<void> {
+  protected writeWithRetry = async (filePath: string, file: Express.Multer.File, retryCount = 3): Promise<void> => {
     const fileStream = createWriteStream(filePath);
 
     fileStream.write(file.buffer, async (error) => {
       if (!error) {
-        return fileStream.end();
+        fileStream.end();
+
+        return;
       }
 
       if (retryCount > 0) {
@@ -55,9 +58,9 @@ export class FileService extends BaseService<FileEntity> {
         throw new FileWriteError(file.filename);
       }
     });
-  }
+  };
 
-  async save(file: Express.Multer.File): SaveFileReturnType {
+  save = async (file: Express.Multer.File): SaveFileReturnType => {
     const uploadsPath = this.configService.get("UPLOADS_PATH");
     const fileEntity = this.createEntity(file);
     const filePath = `${uploadsPath}/${fileEntity.url}`;
@@ -69,11 +72,9 @@ export class FileService extends BaseService<FileEntity> {
     }
 
     return this.repository.save(fileEntity);
-  }
+  };
 
-  declare getById: (id: number) => Promise<FileEntity>;
-
-  delete = async (id: number, _: object) => {
+  delete = async (id: number, _: object): Promise<{ message: string }> => {
     const fileEntity = await this.repository.findOne({ where: { id } });
 
     assertFoundEntity(fileEntity);

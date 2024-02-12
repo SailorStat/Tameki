@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from "@nestjs/common";
+import { FilesInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SoftDeleteDeleteDto } from "src/entities/soft-delete/dto/delete-soft-delete.dto";
 
@@ -27,9 +40,10 @@ export class ProductController {
 
   @ApiOperation({ description: "Создать товар", summary: "Создать товар" })
   @ApiResponse({ description: "Успешное создание товара", status: HttpStatus.CREATED, type: Product })
+  @UseInterceptors(FilesInterceptor("images"))
   @Post()
-  async create(@Body() createProductDto: CreateProductDto) {
-    const product = await this.productService.create(createProductDto);
+  async create(@Body() createProductDto: CreateProductDto, @UploadedFiles() images) {
+    const product = await this.productService.create({ ...createProductDto, images });
 
     return product;
   }

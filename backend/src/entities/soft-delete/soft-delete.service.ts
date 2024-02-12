@@ -16,9 +16,11 @@ export class SoftDeleteService<
   CreateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
   UpdateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
 > extends BaseService<Entity, SoftDeleteGetAllDto, SoftDeleteGetDto, CreateDto, UpdateDto> {
-  async getAll({ page, limit, searchDeleted }: SoftDeleteGetAllDto): Promise<Entity[]> {
+  async getAll({ page, limit, searchDeleted, leftJoinAndSelect }: SoftDeleteGetAllDto): Promise<Entity[]> {
     const queryBuilder = this.repository.createQueryBuilder("entity");
 
+    console.log(leftJoinAndSelect);
+    leftJoinAndSelect && queryBuilder.leftJoinAndSelect(...leftJoinAndSelect);
     searchDeleted && queryBuilder.withDeleted();
 
     return queryBuilder
@@ -28,8 +30,14 @@ export class SoftDeleteService<
       .getMany();
   }
 
-  async getByParams({ searchDeleted, ...params }: Partial<Entity & SoftDeleteGetDto>): Promise<Entity> {
+  async getByParams({
+    searchDeleted,
+    leftJoinAndSelect,
+    ...params
+  }: Partial<Entity> & SoftDeleteGetDto): Promise<Entity> {
     const queryBuilder = this.repository.createQueryBuilder("entity").where(params);
+
+    leftJoinAndSelect && queryBuilder.leftJoinAndSelect(...leftJoinAndSelect);
 
     if (searchDeleted) {
       queryBuilder.withDeleted();
@@ -42,8 +50,10 @@ export class SoftDeleteService<
     return entity;
   }
 
-  async getById(entityId: Entity["id"], { searchDeleted }: SoftDeleteGetDto): Promise<Entity> {
+  async getById(entityId: Entity["id"], { leftJoinAndSelect, searchDeleted }: SoftDeleteGetDto): Promise<Entity> {
     const queryBuilder = this.repository.createQueryBuilder("entity").where("entity.id = :entityId", { entityId });
+
+    leftJoinAndSelect && queryBuilder.leftJoinAndSelect(...leftJoinAndSelect);
 
     if (searchDeleted) {
       queryBuilder.withDeleted();

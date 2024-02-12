@@ -9,7 +9,6 @@ export default class UpdateProductDto extends PartialType(
     "description",
     "estimation",
     "favorites",
-    "images",
     "inStock",
     "labels",
     "price",

@@ -22,7 +22,7 @@ export class ImageService extends FileService {
 
   protected declare createEntity: (file: Express.Multer.File) => Image;
 
-  declare save: (file: Express.Multer.File) => SaveFileReturnType<Image>;
+  declare save: (file: Express.Multer.File, ...params: unknown[]) => SaveFileReturnType<Image>;
 
   declare getById: (id: number) => Promise<Image>;
 

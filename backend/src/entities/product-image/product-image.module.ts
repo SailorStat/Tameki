@@ -8,6 +8,7 @@ import { ProductImageService } from "./product-image.service";
 
 @Module({
   controllers: [ProductImageController],
+  exports: [ProductImageService],
   imports: [ConfigModule, TypeOrmModule.forFeature([ProductImage])],
   providers: [ProductImageService],
 })

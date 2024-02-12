@@ -4,7 +4,9 @@ import { SoftDeleteEntity } from "src/entities/soft-delete/soft-delete.entity";
 import { TransformBoolean } from "src/validation/transform/transformBoolean";
 import { TransformJSON } from "src/validation/transform/transformJSON";
 import { TransformNumber } from "src/validation/transform/transformNumber";
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
+
+import { ProductImage } from "../product-image/product-image.entity";
 
 @Entity()
 export class Product extends SoftDeleteEntity {
@@ -35,10 +37,9 @@ export class Product extends SoftDeleteEntity {
   @Column({ nullable: true })
   hidingReason: string;
 
-  @ApiProperty({ description: "Изображения товара", example: ["image1.jpg", "image2.jpg"] })
-  @IsArray()
-  @Column("simple-array", { nullable: true })
-  images: string[];
+  @ApiProperty({ description: "Изображения товара", isArray: true, type: () => ProductImage })
+  @OneToMany(() => ProductImage, (image) => image.product)
+  images: ProductImage[];
 
   @ApiProperty({ description: "Количество штук в наличии", example: 15 })
   @IsNumber()
