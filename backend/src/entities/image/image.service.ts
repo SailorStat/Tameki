@@ -10,6 +10,8 @@ import { Image } from "./image.entity";
 
 @Injectable()
 export class ImageService extends FileService {
+  readonly entityName: string = "image";
+
   FileBuilder = Image;
 
   constructor(

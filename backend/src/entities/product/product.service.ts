@@ -1,26 +1,30 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { BaseGetAllDto } from "src/entities/base/dto/get-all-base.dto";
+import { assertFoundEntity } from "src/asserts/http.assert";
 import { SoftDeleteDeleteDto } from "src/entities/soft-delete/dto/delete-soft-delete.dto";
-import { SoftDeleteGetDto } from "src/entities/soft-delete/dto/get-soft-delete.dto";
 import { SoftDeleteService } from "src/entities/soft-delete/soft-delete.service";
-import { Repository } from "typeorm";
+import { getWhereParams } from "src/utils/getWhereParams";
+import { Repository, SelectQueryBuilder } from "typeorm";
 
 import { BaseService } from "../base/base.service";
-import { BaseGetDto } from "../base/dto/get-base.dto";
 import { ProductImageService } from "../product-image/product-image.service";
+import assertDeletedEntity from "../soft-delete/asserts/deleted-entity.assert";
 import CreateProductDto from "./dto/create-product.dto";
+import GetAllProductsDto from "./dto/get-all-products.dto";
+import GetProductDto from "./dto/get-product..dto";
 import UpdateProductDto from "./dto/update-product.dto";
 import { Product } from "./product.entity";
 
 @Injectable()
 export class ProductService extends BaseService<
   Product,
-  BaseGetAllDto,
-  SoftDeleteGetDto,
+  GetProductDto,
+  GetAllProductsDto,
   CreateProductDto,
   UpdateProductDto
 > {
+  readonly entityName: string = "product";
+
   softDeleteService: SoftDeleteService<Product>;
 
   constructor(
@@ -28,26 +32,63 @@ export class ProductService extends BaseService<
     protected readonly productImageService: ProductImageService,
   ) {
     super(repository);
-    this.softDeleteService = new SoftDeleteService(repository);
+    this.softDeleteService = new SoftDeleteService(repository, this.entityName);
   }
 
-  protected addImages = <T>(params: T): T & { leftJoinAndSelect: BaseGetDto["leftJoinAndSelect"] } => ({
-    leftJoinAndSelect: ["entity.images", "images"],
-    ...params,
-  });
+  protected getProductModify = (
+    queryBuilder: SelectQueryBuilder<Product>,
+    _?: GetProductDto,
+  ): SelectQueryBuilder<Product> =>
+    queryBuilder.leftJoinAndSelect(`${this.entityName}.images`, this.productImageService.entityName);
 
-  getAll = async (softDeleteGetAllDto: BaseGetAllDto): Promise<Product[]> => {
-    const { page = 1, limit = 20, ...params } = softDeleteGetAllDto;
+  protected getWhereParams = (params: object): Partial<Product> => {
+    const product = new Product();
 
-    return this.softDeleteService.getAll(this.addImages({ limit, page, ...params }));
+    delete product.images;
+
+    return getWhereParams(params, product);
   };
 
-  getByParams = async (getProductDto: Partial<Product & SoftDeleteGetDto>): Promise<Product> => {
-    return this.softDeleteService.getByParams(this.addImages(getProductDto));
+  getAll = async (getAllProductsDto: GetAllProductsDto): Promise<Product[]> => {
+    const { limit = 20, page = 1 } = getAllProductsDto;
+
+    const queryBuilder = this.repository
+      .createQueryBuilder(this.entityName)
+      .where(this.getWhereParams(getAllProductsDto));
+
+    this.getBaseModify(queryBuilder, getAllProductsDto);
+    this.getProductModify(queryBuilder, getAllProductsDto);
+    this.getBaseManyModify(queryBuilder, { ...getAllProductsDto, limit, page });
+
+    return this.softDeleteService.getSoftDeleteModify(queryBuilder, getAllProductsDto).getMany();
   };
 
-  getById = async (productId: number, softDeleteGetDto: SoftDeleteGetDto): Promise<Product> => {
-    return this.softDeleteService.getById(productId, this.addImages(softDeleteGetDto));
+  getByParams = async (getByParamsDto: Partial<GetProductDto & Product>): Promise<Product> => {
+    const queryBuilder = this.repository.createQueryBuilder(this.entityName).where(this.getWhereParams(getByParamsDto));
+
+    this.getProductModify(queryBuilder);
+    this.getBaseModify(queryBuilder, getByParamsDto);
+
+    const product = await this.softDeleteService.getSoftDeleteModify(queryBuilder, getByParamsDto).getOne();
+
+    assertFoundEntity(product);
+
+    return product;
+  };
+
+  getById = async (productId: number, getProductDto: GetProductDto): Promise<Product> => {
+    const queryBuilder = this.repository
+      .createQueryBuilder(this.entityName)
+      .where(`${this.entityName}.id = :productId`, { productId });
+
+    this.getProductModify(queryBuilder);
+    this.getBaseModify(queryBuilder, getProductDto);
+
+    const product = await this.softDeleteService.getSoftDeleteModify(queryBuilder, getProductDto).getOne();
+
+    assertFoundEntity(product);
+
+    return product;
   };
 
   create = async ({ images, ...createDto }: CreateProductDto) => {
@@ -60,11 +101,11 @@ export class ProductService extends BaseService<
       }),
     );
 
-    return this.repository
-      .createQueryBuilder("entity")
-      .where("entity.id = :entityId", { entityId: createdProduct.id })
-      .leftJoinAndSelect(...this.addImages({}).leftJoinAndSelect)
-      .getOne();
+    const queryBuilder = this.repository
+      .createQueryBuilder(this.entityName)
+      .where(`${this.entityName}.id = :productId`, { productId: createdProduct.id });
+
+    return this.getProductModify(queryBuilder).getOne();
   };
 
   delete = async (productId: number, deletableDto: SoftDeleteDeleteDto) => {
@@ -72,6 +113,23 @@ export class ProductService extends BaseService<
   };
 
   restore = async (productId: number) => {
-    return this.softDeleteService.restore(productId);
+    const entity = await this.repository
+      .createQueryBuilder(this.entityName)
+      .withDeleted()
+      .addSelect([`${this.entityName}.deletedAt`, `${this.entityName}.deletionReason`])
+      .where(`${this.entityName}.id = :productId`, { productId })
+      .getOne();
+
+    assertFoundEntity(entity);
+    assertDeletedEntity(entity);
+
+    await this.repository
+      .createQueryBuilder(this.entityName)
+      .update()
+      .set({ deletedAt: null, deletionReason: null })
+      .where(`${this.entityName}.id = :productId`, { productId })
+      .execute();
+
+    return this.getById(productId, {});
   };
 }

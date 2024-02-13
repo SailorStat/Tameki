@@ -11,6 +11,8 @@ import { ProductImage } from "./product-image.entity";
 
 @Injectable()
 export class ProductImageService extends ImageService {
+  readonly entityName: string = "product_image";
+
   FileBuilder = ProductImage;
 
   constructor(

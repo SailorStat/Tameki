@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { assertFoundEntity } from "src/asserts/http.assert";
-import { DeepPartial, Repository } from "typeorm";
+import { DeepPartial, Repository, SelectQueryBuilder } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 import { BaseEntity } from "../base/base.entity";
@@ -10,27 +10,44 @@ import { BaseGetDto } from "./dto/get-base.dto";
 @Injectable()
 export class BaseService<
   Entity extends BaseEntity,
-  GetAllDto extends BaseGetAllDto = BaseGetAllDto,
   GetDto extends BaseGetDto = BaseGetDto,
+  GetAllDto extends BaseGetAllDto & GetDto = BaseGetAllDto & GetDto,
   CreateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
   UpdateDto = object,
 > {
+  readonly entityName: string = "entity";
+
   constructor(protected readonly repository: Repository<Entity>) {}
 
-  async getAll({ page, limit, orderBy, leftJoinAndSelect, ...params }: GetAllDto): Promise<Entity[]> {
-    const queryBuilder = this.repository.createQueryBuilder("entity").where(params);
+  protected getBaseModify = (
+    queryBuilder: SelectQueryBuilder<Entity>,
+    { orderBy }: GetDto,
+  ): SelectQueryBuilder<Entity> => queryBuilder.orderBy(orderBy || { [`${this.entityName}.id`]: "ASC" });
 
-    leftJoinAndSelect && queryBuilder.leftJoinAndSelect(...leftJoinAndSelect);
-    page && limit && queryBuilder.offset((page - 1) * limit).limit(limit);
-    orderBy && queryBuilder.orderBy(orderBy);
+  protected getBaseManyModify = (
+    queryBuilder: SelectQueryBuilder<Entity>,
+    params: GetAllDto,
+  ): SelectQueryBuilder<Entity> => {
+    const { page, limit } = params;
+
+    queryBuilder.where(
+      `${this.entityName}.id = (SELECT "id" FROM "${this.entityName}" ORDER BY "id" ASC LIMIT ${limit} OFFSET ${(page - 1) * limit})`,
+    );
+    this.getBaseModify(queryBuilder, params);
+
+    return queryBuilder;
+  };
+
+  async getAll(params: GetAllDto): Promise<Entity[]> {
+    const queryBuilder = this.repository.createQueryBuilder(this.entityName).where(params);
+
+    this.getBaseManyModify(queryBuilder, params);
 
     return queryBuilder.getMany();
   }
 
-  async getByParams({ leftJoinAndSelect, ...params }: GetDto & Partial<Entity>): Promise<Entity> {
-    const queryBuilder = await this.repository.createQueryBuilder("entity").where(params);
-
-    leftJoinAndSelect && queryBuilder.leftJoinAndSelect(...leftJoinAndSelect);
+  async getByParams(params: GetDto & Partial<Entity>): Promise<Entity> {
+    const queryBuilder = await this.repository.createQueryBuilder(this.entityName).where(params);
 
     const entity = await queryBuilder.getOne();
 
@@ -39,13 +56,12 @@ export class BaseService<
     return entity;
   }
 
-  async getById(entityId: number, { leftJoinAndSelect, ...params }: GetDto): Promise<Entity> {
+  async getById(entityId: number, params?: GetDto): Promise<Entity> {
     const queryBuilder = await this.repository
-      .createQueryBuilder("entity")
-      .where("entity.id = :entityId", { entityId })
-      .andWhere(params);
+      .createQueryBuilder(this.entityName)
+      .where(`${this.entityName}.id = :entityId`, { entityId });
 
-    leftJoinAndSelect && queryBuilder.leftJoinAndSelect(...leftJoinAndSelect);
+    params && queryBuilder.andWhere(params);
 
     const entity = await queryBuilder.getOne();
 
@@ -59,30 +75,27 @@ export class BaseService<
     const createdEntity = await this.repository.save(toCreateEntity);
 
     return this.repository
-      .createQueryBuilder("entity")
-      .where("entity.id = :entityId", { entityId: createdEntity.id })
+      .createQueryBuilder(this.entityName)
+      .where(`${this.entityName}.id = :entityId`, { entityId: createdEntity.id })
       .getOne();
   };
 
   update = async (entityId: number, updateDto: UpdateDto): Promise<Entity> => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    await this.getById(entityId, {} as GetDto);
+    await this.getById(entityId);
 
     await this.repository
-      .createQueryBuilder("entity")
+      .createQueryBuilder(this.entityName)
       .update()
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .set(updateDto as unknown as QueryDeepPartialEntity<Entity>)
-      .where("entity.id = :entityId", { entityId })
+      .where(`${this.entityName}.id = :entityId`, { entityId })
       .execute();
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    return this.getById(entityId, {} as GetDto);
+    return this.getById(entityId);
   };
 
   async delete(entityId: number, _: object) {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    await this.getById(entityId, {} as GetDto);
+    await this.getById(entityId);
     await this.repository.createQueryBuilder().delete().where("id = :entityId", { entityId }).execute();
 
     return { message: "OK" };

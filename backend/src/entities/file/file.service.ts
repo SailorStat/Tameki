@@ -11,6 +11,8 @@ import { SaveFileReturnType } from "./file.types";
 
 @Injectable()
 export class FileService extends BaseService<FileEntity> {
+  readonly entityName: string = "file";
+
   FileBuilder = FileEntity;
 
   constructor(

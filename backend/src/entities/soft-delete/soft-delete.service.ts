@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { assertFoundEntity } from "src/asserts/http.assert";
-import { DeepPartial } from "typeorm";
+import { DeepPartial, Repository, SelectQueryBuilder } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.d";
 
 import { BaseEntity } from "../base/base.entity";
@@ -16,50 +16,51 @@ export class SoftDeleteService<
   CreateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
   UpdateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
 > extends BaseService<Entity, SoftDeleteGetAllDto, SoftDeleteGetDto, CreateDto, UpdateDto> {
-  async getAll({ page, limit, searchDeleted, leftJoinAndSelect }: SoftDeleteGetAllDto): Promise<Entity[]> {
-    const queryBuilder = this.repository.createQueryBuilder("entity");
-
-    console.log(leftJoinAndSelect);
-    leftJoinAndSelect && queryBuilder.leftJoinAndSelect(...leftJoinAndSelect);
-    searchDeleted && queryBuilder.withDeleted();
-
-    return queryBuilder
-      .offset((page - 1) * limit)
-      .limit(limit)
-      .orderBy("entity.id")
-      .getMany();
+  constructor(
+    repository: Repository<Entity>,
+    readonly entityName: string,
+  ) {
+    super(repository);
   }
 
-  async getByParams({
-    searchDeleted,
-    leftJoinAndSelect,
-    ...params
-  }: Partial<Entity> & SoftDeleteGetDto): Promise<Entity> {
-    const queryBuilder = this.repository.createQueryBuilder("entity").where(params);
+  getSoftDeleteModify = (
+    queryBuilder: SelectQueryBuilder<Entity>,
+    { searchDeleted }: SoftDeleteGetDto,
+  ): SelectQueryBuilder<Entity> => {
+    searchDeleted && queryBuilder.withDeleted();
 
-    leftJoinAndSelect && queryBuilder.leftJoinAndSelect(...leftJoinAndSelect);
+    return queryBuilder;
+  };
 
-    if (searchDeleted) {
-      queryBuilder.withDeleted();
-    }
+  async getAll(params: SoftDeleteGetAllDto): Promise<Entity[]> {
+    const queryBuilder = this.repository.createQueryBuilder(this.entityName);
 
-    const entity = await queryBuilder.getOne();
+    this.getBaseModify(queryBuilder, params);
+    this.getBaseManyModify(queryBuilder, params);
+
+    return this.getSoftDeleteModify(queryBuilder, params).getMany();
+  }
+
+  async getByParams(params: Partial<Entity> & SoftDeleteGetDto): Promise<Entity> {
+    const queryBuilder = this.repository.createQueryBuilder(this.entityName).where(params);
+
+    this.getBaseModify(queryBuilder, params);
+
+    const entity = await this.getSoftDeleteModify(queryBuilder, params).getOne();
 
     assertFoundEntity(entity);
 
     return entity;
   }
 
-  async getById(entityId: Entity["id"], { leftJoinAndSelect, searchDeleted }: SoftDeleteGetDto): Promise<Entity> {
-    const queryBuilder = this.repository.createQueryBuilder("entity").where("entity.id = :entityId", { entityId });
+  async getById(entityId: Entity["id"], params: SoftDeleteGetDto): Promise<Entity> {
+    const queryBuilder = this.repository
+      .createQueryBuilder(this.entityName)
+      .where(`${this.entityName}.id = :entityId`, { entityId });
 
-    leftJoinAndSelect && queryBuilder.leftJoinAndSelect(...leftJoinAndSelect);
+    this.getBaseModify(queryBuilder, params);
 
-    if (searchDeleted) {
-      queryBuilder.withDeleted();
-    }
-
-    const entity = await queryBuilder.getOne();
+    const entity = await this.getSoftDeleteModify(queryBuilder, params).getOne();
 
     assertFoundEntity(entity);
 
@@ -82,21 +83,21 @@ export class SoftDeleteService<
 
   async restore(entityId: Entity["id"]): Promise<Entity> {
     const entity = await this.repository
-      .createQueryBuilder("entity")
+      .createQueryBuilder(this.entityName)
       .withDeleted()
-      .addSelect(["entity.deletedAt", "entity.deletionReason"])
-      .where("entity.id = :entityId", { entityId })
+      .addSelect([`${this.entityName}.deletedAt`, `${this.entityName}.deletionReason`])
+      .where(`${this.entityName}.id = :entityId`, { entityId })
       .getOne();
 
     assertFoundEntity(entity);
     assertDeletedEntity(entity);
 
     await this.repository
-      .createQueryBuilder("entity")
+      .createQueryBuilder(this.entityName)
       .update()
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .set({ deletedAt: null, deletionReason: null } as unknown as QueryDeepPartialEntity<Entity>)
-      .where("entity.id = :entityId", { entityId })
+      .where(`${this.entityName}.id = :entityId`, { entityId })
       .execute();
 
     const updatedEntity = await this.getById(entityId, {});
