@@ -3,16 +3,16 @@ import { assertFoundEntity } from "src/asserts/http.assert";
 import { DeepPartial, Repository, SelectQueryBuilder } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.d";
 
-import { BaseEntity } from "../base/base.entity";
 import { BaseService } from "../base/base.service";
 import assertDeletedEntity from "./asserts/deleted-entity.assert";
 import { SoftDeleteDeleteDto } from "./dto/delete-soft-delete.dto";
 import { SoftDeleteGetAllDto } from "./dto/get-all-soft-delete.dto";
 import { SoftDeleteGetDto } from "./dto/get-soft-delete.dto";
+import { SoftDeleteEntity } from "./soft-delete.entity";
 
 @Injectable()
 export class SoftDeleteService<
-  Entity extends BaseEntity,
+  Entity extends SoftDeleteEntity,
   CreateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
   UpdateDto extends DeepPartial<Entity> = DeepPartial<Entity>,
 > extends BaseService<Entity, SoftDeleteGetAllDto, SoftDeleteGetDto, CreateDto, UpdateDto> {
@@ -85,7 +85,7 @@ export class SoftDeleteService<
     const entity = await this.repository
       .createQueryBuilder(this.entityName)
       .withDeleted()
-      .addSelect([`${this.entityName}.deletedAt`, `${this.entityName}.deletionReason`])
+      .select([`${this.entityName}.deletedAt`, `${this.entityName}.deletionReason`])
       .where(`${this.entityName}.id = :entityId`, { entityId })
       .getOne();
 
@@ -96,7 +96,7 @@ export class SoftDeleteService<
       .createQueryBuilder(this.entityName)
       .update()
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      .set({ deletedAt: null, deletionReason: null } as unknown as QueryDeepPartialEntity<Entity>)
+      .set({ deletedAt: null, deletionReason: null } as QueryDeepPartialEntity<Entity>)
       .where(`${this.entityName}.id = :entityId`, { entityId })
       .execute();
 

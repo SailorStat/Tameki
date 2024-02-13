@@ -1,15 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsBoolean, IsNumber, IsString } from "class-validator";
-import { SoftDeleteEntity } from "src/entities/soft-delete/soft-delete.entity";
+import { mixin } from "src/utils/mixin";
 import { TransformBoolean } from "src/validation/transform/transformBoolean";
 import { TransformJSON } from "src/validation/transform/transformJSON";
 import { TransformNumber } from "src/validation/transform/transformNumber";
 import { Column, Entity, OneToMany } from "typeorm";
 
+import { HiddenStateEntity } from "../hidden-state/hidden-state.entity";
 import { ProductImage } from "../product-image/product-image.entity";
+import { SoftDeleteEntity } from "../soft-delete/soft-delete.entity";
 
 @Entity()
-export class Product extends SoftDeleteEntity {
+export class Product extends mixin(HiddenStateEntity, SoftDeleteEntity) {
   @ApiProperty({ description: "Артикул продавца", example: "12345" })
   @IsString()
   @Column({ nullable: true })
@@ -31,11 +33,6 @@ export class Product extends SoftDeleteEntity {
   @Column({ default: false })
   @TransformBoolean()
   favorites: boolean;
-
-  @ApiProperty({ description: "Причина скрытия товара", example: "Черновик товара" })
-  @IsString()
-  @Column({ nullable: true })
-  hidingReason: string;
 
   @ApiProperty({ description: "Изображения товара", isArray: true, type: () => ProductImage })
   @OneToMany(() => ProductImage, (image) => image.product)

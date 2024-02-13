@@ -29,12 +29,6 @@ export default class UpdateProductDto extends PartialType(
   favorites?: Product["favorites"];
 
   @IsOptional()
-  hidingReason?: Product["hidingReason"];
-
-  @IsOptional()
-  images?: Product["images"];
-
-  @IsOptional()
   inStock?: Product["inStock"];
 
   @IsOptional()

@@ -7,8 +7,9 @@ import { getWhereParams } from "src/utils/getWhereParams";
 import { Repository, SelectQueryBuilder } from "typeorm";
 
 import { BaseService } from "../base/base.service";
+import { HiddenStateHideDto } from "../hidden-state/dto/hide-hidden-state.dto";
+import { HiddenStateService } from "../hidden-state/hidden-state.service";
 import { ProductImageService } from "../product-image/product-image.service";
-import assertDeletedEntity from "../soft-delete/asserts/deleted-entity.assert";
 import CreateProductDto from "./dto/create-product.dto";
 import GetAllProductsDto from "./dto/get-all-products.dto";
 import GetProductDto from "./dto/get-product..dto";
@@ -27,12 +28,15 @@ export class ProductService extends BaseService<
 
   softDeleteService: SoftDeleteService<Product>;
 
+  hiddenStateService: HiddenStateService<Product>;
+
   constructor(
     @InjectRepository(Product) protected readonly repository: Repository<Product>,
     protected readonly productImageService: ProductImageService,
   ) {
     super(repository);
     this.softDeleteService = new SoftDeleteService(repository, this.entityName);
+    this.hiddenStateService = new HiddenStateService(repository, this.entityName);
   }
 
   protected getProductModify = (
@@ -59,6 +63,7 @@ export class ProductService extends BaseService<
     this.getBaseModify(queryBuilder, getAllProductsDto);
     this.getProductModify(queryBuilder, getAllProductsDto);
     this.getBaseManyModify(queryBuilder, { ...getAllProductsDto, limit, page });
+    this.hiddenStateService.getHiddenStateModify(queryBuilder, getAllProductsDto);
 
     return this.softDeleteService.getSoftDeleteModify(queryBuilder, getAllProductsDto).getMany();
   };
@@ -68,6 +73,7 @@ export class ProductService extends BaseService<
 
     this.getProductModify(queryBuilder);
     this.getBaseModify(queryBuilder, getByParamsDto);
+    this.hiddenStateService.getHiddenStateModify(queryBuilder, getByParamsDto);
 
     const product = await this.softDeleteService.getSoftDeleteModify(queryBuilder, getByParamsDto).getOne();
 
@@ -83,6 +89,7 @@ export class ProductService extends BaseService<
 
     this.getProductModify(queryBuilder);
     this.getBaseModify(queryBuilder, getProductDto);
+    this.hiddenStateService.getHiddenStateModify(queryBuilder, getProductDto);
 
     const product = await this.softDeleteService.getSoftDeleteModify(queryBuilder, getProductDto).getOne();
 
@@ -93,6 +100,9 @@ export class ProductService extends BaseService<
 
   create = async ({ images, ...createDto }: CreateProductDto) => {
     const toCreateEntity = this.repository.create(createDto);
+
+    createDto.hiddenReason && (toCreateEntity.hiddenAt = new Date());
+
     const createdProduct = await this.repository.save(toCreateEntity);
 
     await Promise.allSettled(
@@ -113,23 +123,14 @@ export class ProductService extends BaseService<
   };
 
   restore = async (productId: number) => {
-    const entity = await this.repository
-      .createQueryBuilder(this.entityName)
-      .withDeleted()
-      .addSelect([`${this.entityName}.deletedAt`, `${this.entityName}.deletionReason`])
-      .where(`${this.entityName}.id = :productId`, { productId })
-      .getOne();
+    return this.softDeleteService.restore(productId);
+  };
 
-    assertFoundEntity(entity);
-    assertDeletedEntity(entity);
+  hide = async (productId: number, hideDto: HiddenStateHideDto) => {
+    return this.hiddenStateService.hide(productId, hideDto);
+  };
 
-    await this.repository
-      .createQueryBuilder(this.entityName)
-      .update()
-      .set({ deletedAt: null, deletionReason: null })
-      .where(`${this.entityName}.id = :productId`, { productId })
-      .execute();
-
-    return this.getById(productId, {});
+  show = async (productId: number) => {
+    return this.hiddenStateService.show(productId);
   };
 }

@@ -15,6 +15,7 @@ import { FilesInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SoftDeleteDeleteDto } from "src/entities/soft-delete/dto/delete-soft-delete.dto";
 
+import { HiddenStateHideDto } from "../hidden-state/dto/hide-hidden-state.dto";
 import CreateProductDto from "./dto/create-product.dto";
 import GetAllProductsDto from "./dto/get-all-products.dto";
 import GetProductByParamsDto from "./dto/get-by-params-product..dto";
@@ -89,6 +90,24 @@ export class ProductController {
   @Patch(`/:${URL_PRODUCT_ID_PARAM}/restore`)
   async restore(@Param(URL_PRODUCT_ID_PARAM) productId: number) {
     const product = await this.productService.restore(productId);
+
+    return product;
+  }
+
+  @ApiOperation({ description: "Скрыть товар", summary: "Скрыть товар" })
+  @ApiResponse({ description: "Успешное скрытие товара", status: HttpStatus.OK })
+  @Patch(`/:${URL_PRODUCT_ID_PARAM}/hide`)
+  async hide(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Body() hiddenStateHideDto: HiddenStateHideDto) {
+    const product = await this.productService.hide(productId, hiddenStateHideDto);
+
+    return product;
+  }
+
+  @ApiOperation({ description: "Показать товар после скрытия", summary: "Показать товар" })
+  @ApiResponse({ description: "Успешный показ товара", status: HttpStatus.OK })
+  @Patch(`/:${URL_PRODUCT_ID_PARAM}/show`)
+  async show(@Param(URL_PRODUCT_ID_PARAM) productId: number) {
+    const product = await this.productService.show(productId);
 
     return product;
   }
