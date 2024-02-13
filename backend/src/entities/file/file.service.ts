@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { createWriteStream, existsSync, mkdirSync, promises as fsPromises } from "fs";
+import fs from "fs";
 import { assertFoundEntity } from "src/asserts/http.assert";
 import { FileWriteError } from "src/exceptions/file-write-error.exception";
 import { Repository } from "typeorm";
@@ -26,8 +26,8 @@ export class FileService extends BaseService<FileEntity> {
     const fileEntity = new this.FileBuilder();
     const uploadsPath = this.configService.get("UPLOADS_PATH");
 
-    if (!existsSync(uploadsPath)) {
-      mkdirSync(uploadsPath, { recursive: true });
+    if (!fs.existsSync(uploadsPath)) {
+      fs.mkdirSync(uploadsPath, { recursive: true });
     }
 
     fileEntity.filename = file.originalname;
@@ -36,7 +36,7 @@ export class FileService extends BaseService<FileEntity> {
 
     let filePath = "";
 
-    while (!filePath || existsSync(filePath)) {
+    while (!filePath || fs.existsSync(filePath)) {
       fileEntity.url = `${crypto.randomUUID()}.${fileExtension}`;
       filePath = `${uploadsPath}/${fileEntity.url}`;
     }
@@ -45,7 +45,7 @@ export class FileService extends BaseService<FileEntity> {
   };
 
   protected writeWithRetry = async (filePath: string, file: Express.Multer.File, retryCount = 3): Promise<void> => {
-    const fileStream = createWriteStream(filePath);
+    const fileStream = fs.createWriteStream(filePath);
 
     fileStream.write(file.buffer, async (error) => {
       if (!error) {
@@ -83,7 +83,7 @@ export class FileService extends BaseService<FileEntity> {
 
     const filePath = `${this.configService.get("UPLOADS_PATH")}/${fileEntity.url}`;
 
-    await fsPromises.unlink(filePath);
+    await fs.promises.unlink(filePath);
     await this.repository.softDelete(id);
 
     return { message: "OK" };
