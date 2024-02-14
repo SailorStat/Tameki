@@ -11,6 +11,12 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@utility/*": ["src/entities/utility/*"],
+      "@database/*": ["src/entities/database/*"],
+      "@transform": ["src/validation/transform"],
+      "@constraints": ["src/validation/constraints"],
+    }
   }
 }
