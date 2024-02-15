@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { TransformNumber } from "@transform";
-import { CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class BaseEntity {
@@ -16,4 +16,8 @@ export class BaseEntity {
   @ApiProperty({ description: "Дата изменения" })
   @UpdateDateColumn({ default: () => "CURRENT_TIMESTAMP", type: "timestamp" })
   updatedAt: Date;
+
+  @ApiProperty({ description: "Дата удаления", example: "Mon, 05 Feb 2024 12:23:37 GMT" })
+  @DeleteDateColumn({ nullable: true, select: false, type: "timestamp" })
+  deletedAt?: Date;
 }

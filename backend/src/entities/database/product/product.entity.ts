@@ -50,6 +50,7 @@ export class Product extends SoftDeleteEntity {
   @TransformNumber()
   inStock: number;
 
+  // TODO: добавить таблицу с леблами
   @ApiProperty({ description: "Ключевые слова", example: ["новый", "распродажа"] })
   @IsArray()
   @Column("simple-array", { nullable: true })

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { assertFoundEntity } from "src/asserts/http.assert";
+import { getWhereParams } from "src/utils/getWhereParams";
 import { DeepPartial, Repository, SelectQueryBuilder } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
@@ -19,6 +20,12 @@ export class BaseService<
 
   constructor(protected readonly repository: Repository<Entity>) {}
 
+  protected getWhereParams = (params: object): Partial<BaseEntity> => {
+    const product = new BaseEntity();
+
+    return getWhereParams(params, product);
+  };
+
   protected getBaseModify = (
     queryBuilder: SelectQueryBuilder<Entity>,
     { orderBy }: GetDto,
@@ -28,7 +35,7 @@ export class BaseService<
     queryBuilder: SelectQueryBuilder<Entity>,
     params: GetAllDto,
   ): SelectQueryBuilder<Entity> => {
-    const { page, limit } = params;
+    const { page = 1, limit = 20 } = params;
 
     queryBuilder.where(
       `${this.entityName}.id = (SELECT "id" FROM "${this.entityName}" ORDER BY "id" ASC LIMIT ${limit} OFFSET ${(page - 1) * limit})`,
@@ -39,7 +46,7 @@ export class BaseService<
   };
 
   async getAll(params: GetAllDto): Promise<Entity[]> {
-    const queryBuilder = this.repository.createQueryBuilder(this.entityName).where(params);
+    const queryBuilder = this.repository.createQueryBuilder(this.entityName).where(this.getWhereParams(params));
 
     this.getBaseManyModify(queryBuilder, params);
 
@@ -47,7 +54,7 @@ export class BaseService<
   }
 
   async getByParams(params: GetDto & Partial<Entity>): Promise<Entity> {
-    const queryBuilder = await this.repository.createQueryBuilder(this.entityName).where(params);
+    const queryBuilder = await this.repository.createQueryBuilder(this.entityName).where(this.getWhereParams(params));
 
     const entity = await queryBuilder.getOne();
 
@@ -61,7 +68,7 @@ export class BaseService<
       .createQueryBuilder(this.entityName)
       .where(`${this.entityName}.id = :entityId`, { entityId });
 
-    params && queryBuilder.andWhere(params);
+    params && queryBuilder.andWhere(this.getWhereParams(params));
 
     const entity = await queryBuilder.getOne();
 
@@ -96,7 +103,7 @@ export class BaseService<
 
   async delete(entityId: number, _: object) {
     await this.getById(entityId);
-    await this.repository.createQueryBuilder().delete().where("id = :entityId", { entityId }).execute();
+    await this.repository.createQueryBuilder().softDelete().where("id = :entityId", { entityId }).execute();
 
     return { message: "OK" };
   }

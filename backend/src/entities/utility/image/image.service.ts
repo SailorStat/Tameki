@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
+import { getWhereParams } from "src/utils/getWhereParams";
 import { Repository } from "typeorm";
 
 import { FileService } from "../file/file.service";
@@ -21,6 +22,12 @@ export class ImageService extends FileService {
   ) {
     super(configService, repository);
   }
+
+  protected getWhereParams = (params: object): Partial<Image> => {
+    const product = new Image();
+
+    return getWhereParams(params, product);
+  };
 
   protected declare createEntity: (file: Express.Multer.File) => Image;
 

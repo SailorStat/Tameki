@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Query } from "
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import GetAllProductImageDto from "./dto/get-all-product-image.dto";
-import UpdateProductImageDto from "./dto/update-image.dto";
+import UpdateProductImageDto from "./dto/update-product-image.dto";
 import { PRODUCT_IMAGE_BASE_URL, URL_PRODUCT_IMAGE_ID_PARAM } from "./product-image.constants";
 import { ProductImage } from "./product-image.entity";
 import { ProductImageService } from "./product-image.service";
