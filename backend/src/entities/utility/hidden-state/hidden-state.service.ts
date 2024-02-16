@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { assertFoundEntity } from "src/asserts/http.assert";
 import { DeepPartial, Repository, SelectQueryBuilder } from "typeorm";
-import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.d";
 
 import { BaseService } from "../base/base.service";
 import assertHiddenEntity from "./asserts/hidden-entity.assert";
+import assertShowedEntity from "./asserts/showed-entity.assert";
 import { HiddenStateGetAllDto } from "./dto/get-all-hidden-state.dto";
 import { HiddenStateGetDto } from "./dto/get-hidden-state.dto";
 import { HiddenStateHideDto } from "./dto/hide-hidden-state.dto";
@@ -69,9 +69,6 @@ export class HiddenStateService<
 
   create = async (createDto: CreateDto): Promise<Entity> => {
     const toCreateEntity = this.repository.create(createDto);
-
-    createDto.hiddenReason && (toCreateEntity.hiddenAt = new Date());
-
     const createdEntity = await this.repository.save(toCreateEntity);
 
     return this.repository
@@ -80,39 +77,27 @@ export class HiddenStateService<
       .getOne();
   };
 
-  hide = async (entityId: Entity["id"], { hiddenReason }: HiddenStateHideDto) => {
-    await this.getById(entityId, {});
+  protected updateHiddenReason = async (
+    entityId: Entity["id"],
+    { hiddenReason }: HiddenStateHideDto,
+  ): Promise<Entity> => {
+    const entity = await this.getById(entityId, { searchHidden: !hiddenReason });
 
-    await this.repository
-      .createQueryBuilder()
-      .update()
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      .set({ hiddenAt: new Date(), hiddenReason } as unknown as QueryDeepPartialEntity<Entity>)
-      .where("id = :entityId", { entityId })
-      .execute();
+    assertFoundEntity(entity);
+    hiddenReason ? assertShowedEntity(entity) : assertHiddenEntity(entity);
+
+    const toSaveEntity = this.repository.create({ ...entity, hiddenReason });
+
+    return this.repository.save(toSaveEntity);
+  };
+
+  hide = async (entityId: Entity["id"], { hiddenReason }: HiddenStateHideDto) => {
+    await this.updateHiddenReason(entityId, { hiddenReason });
 
     return { message: "OK" };
   };
 
-  show = async (entityId: Entity["id"]): Promise<Entity> => {
-    const entity = await this.repository
-      .createQueryBuilder(this.entityName)
-      .withDeleted()
-      .select([`${this.entityName}.hiddenAt`, `${this.entityName}.hiddenReason`])
-      .where(`${this.entityName}.id = :entityId`, { entityId })
-      .getOne();
-
-    assertFoundEntity(entity);
-    assertHiddenEntity(entity);
-
-    await this.repository
-      .createQueryBuilder(this.entityName)
-      .update()
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      .set({ hiddenAt: null, hiddenReason: null } as QueryDeepPartialEntity<Entity>)
-      .where(`${this.entityName}.id = :entityId`, { entityId })
-      .execute();
-
-    return this.getById(entityId, {});
+  show = async (entityId: Entity["id"]) => {
+    return this.updateHiddenReason(entityId, { hiddenReason: null });
   };
 }

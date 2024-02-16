@@ -4,18 +4,24 @@ import { UserImage } from "@database/user-image/user-image.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { SoftDeleteEntity } from "@utility/soft-delete/soft-delete.entity";
 import { IsOptional } from "class-validator";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import { BeforeUpdate, Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 
 @Entity()
 export class User extends SoftDeleteEntity {
   // Взято из BlockedState. Здесь отдельные изменения не вносить
   @ApiProperty({ description: "Дата блокировки", example: "Mon, 05 Feb 2024 12:23:37 GMT" })
-  @Column({ default: () => "CURRENT_TIMESTAMP", type: "timestamp" })
+  @Column({ nullable: true, select: false, type: "timestamp" })
   blockedAt: Date;
 
   @ApiProperty({ description: "Причина блокировки", example: "Множественные оскорбления" })
+  @IsString()
   @Column({ nullable: true, select: false, type: "varchar" })
   blockedReason?: string;
+
+  @BeforeUpdate()
+  updateBlockedAt() {
+    this.blockedAt = !this.blockedReason ? null : new Date();
+  }
   // -------------------------------------------------
 
   @ApiProperty({ description: "Имя пользователя", example: "John" })

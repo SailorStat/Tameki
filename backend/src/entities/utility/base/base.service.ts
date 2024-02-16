@@ -26,20 +26,20 @@ export class BaseService<
     return getWhereParams(params, product);
   };
 
-  protected getBaseModify = (
-    queryBuilder: SelectQueryBuilder<Entity>,
-    { orderBy }: GetDto,
-  ): SelectQueryBuilder<Entity> => queryBuilder.orderBy(orderBy || { [`${this.entityName}.id`]: "ASC" });
+  protected getBaseModify = (queryBuilder: SelectQueryBuilder<Entity>, _: GetDto): SelectQueryBuilder<Entity> =>
+    queryBuilder;
 
   protected getBaseManyModify = (
     queryBuilder: SelectQueryBuilder<Entity>,
     params: GetAllDto,
   ): SelectQueryBuilder<Entity> => {
-    const { page = 1, limit = 20 } = params;
+    const { page = 1, limit = 20, orderBy = { [`${this.entityName}.id`]: "ASC" } } = params;
 
-    queryBuilder.where(
-      `${this.entityName}.id = (SELECT "id" FROM "${this.entityName}" ORDER BY "id" ASC LIMIT ${limit} OFFSET ${(page - 1) * limit})`,
-    );
+    queryBuilder
+      .where(
+        `${this.entityName}.id = (SELECT "id" FROM "${this.entityName}" ORDER BY "id" ASC LIMIT ${limit} OFFSET ${(page - 1) * limit})`,
+      )
+      .orderBy(orderBy);
     this.getBaseModify(queryBuilder, params);
 
     return queryBuilder;

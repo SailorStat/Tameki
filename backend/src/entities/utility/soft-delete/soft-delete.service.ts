@@ -85,7 +85,7 @@ export class SoftDeleteService<
     const entity = await this.repository
       .createQueryBuilder(this.entityName)
       .withDeleted()
-      .select([`${this.entityName}.deletedAt`, `${this.entityName}.deletionReason`])
+      .select([`${this.entityName}.deletionReason`])
       .where(`${this.entityName}.id = :entityId`, { entityId })
       .getOne();
 

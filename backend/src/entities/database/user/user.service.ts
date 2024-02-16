@@ -36,9 +36,10 @@ export class UserService extends BaseService<User, UserGetDto, UserGetAllDto, Us
   }
 
   protected getUserModify = (queryBuilder: SelectQueryBuilder<User>, _?: UserGetDto): SelectQueryBuilder<User> =>
-    queryBuilder.leftJoinAndSelect(`${this.entityName}.images`, "images");
-  // .leftJoinAndSelect(`${this.entityName}.roles`, "roles");
-  // .addSelect(["roles.name"]);
+    queryBuilder
+      .leftJoinAndSelect(`${this.entityName}.images`, "images")
+      .leftJoinAndSelect(`${this.entityName}.roles`, "roles")
+      .addSelect(["roles.name"]);
 
   protected getWhereParams = (params: object): Partial<User> => {
     const user = new User();
@@ -77,8 +78,6 @@ export class UserService extends BaseService<User, UserGetDto, UserGetAllDto, Us
   };
 
   getById = async (userId: number, getUserDto: UserGetDto): Promise<User> => {
-    console.log(userId);
-
     const queryBuilder = this.repository
       .createQueryBuilder(this.entityName)
       .where(`${this.entityName}.id = :userId`, { userId });

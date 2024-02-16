@@ -43,7 +43,7 @@ export class UserController {
   @ApiResponse({ description: "Успешное создание пользователя", status: HttpStatus.CREATED, type: User })
   @UseInterceptors(FilesInterceptor("images"))
   @Post()
-  async create(@Body() createDto: UserCreateDto, @UploadedFiles() images) {
+  async create(@Body() createDto: UserCreateDto, @UploadedFiles() images = []) {
     const user = await this.userService.create({ ...createDto, images });
 
     return user;

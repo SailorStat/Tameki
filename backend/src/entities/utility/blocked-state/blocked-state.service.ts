@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { assertFoundEntity } from "src/asserts/http.assert";
 import { DeepPartial, Repository, SelectQueryBuilder } from "typeorm";
-import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.d";
 
 import { BaseService } from "../base/base.service";
 import assertBlockedEntity from "./asserts/blocked-entity.assert";
+import assertUnblockedEntity from "./asserts/unblocked-entity.assert";
 import { BlockedStateEntity } from "./blocked-state.entity";
 import { BlockedStateBlockDto } from "./dto/block-blocked-state.dto";
 import { BlockedStateGetAllDto } from "./dto/get-all-blocked-state.dto";
@@ -69,9 +69,6 @@ export class BlockedStateService<
 
   create = async (createDto: CreateDto): Promise<Entity> => {
     const toCreateEntity = this.repository.create(createDto);
-
-    createDto.blockedReason && (toCreateEntity.blockedAt = new Date());
-
     const createdEntity = await this.repository.save(toCreateEntity);
 
     return this.repository
@@ -80,39 +77,27 @@ export class BlockedStateService<
       .getOne();
   };
 
-  block = async (entityId: Entity["id"], { blockedReason }: BlockedStateBlockDto) => {
-    await this.getById(entityId, {});
+  protected updateBlockedReason = async (
+    entityId: Entity["id"],
+    { blockedReason }: BlockedStateBlockDto,
+  ): Promise<Entity> => {
+    const entity = await this.getById(entityId, { searchBlocked: !blockedReason });
 
-    await this.repository
-      .createQueryBuilder()
-      .update()
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      .set({ blockedAt: new Date(), blockedReason } as unknown as QueryDeepPartialEntity<Entity>)
-      .where("id = :entityId", { entityId })
-      .execute();
+    assertFoundEntity(entity);
+    blockedReason ? assertUnblockedEntity(entity) : assertBlockedEntity(entity);
+
+    const toSaveEntity = this.repository.create({ ...entity, blockedReason });
+
+    return this.repository.save(toSaveEntity);
+  };
+
+  block = async (entityId: Entity["id"], { blockedReason }: BlockedStateBlockDto) => {
+    await this.updateBlockedReason(entityId, { blockedReason });
 
     return { message: "OK" };
   };
 
-  unblock = async (entityId: Entity["id"]): Promise<Entity> => {
-    const entity = await this.repository
-      .createQueryBuilder(this.entityName)
-      .withDeleted()
-      .select([`${this.entityName}.blockedAt`, `${this.entityName}.blockedReason`])
-      .where(`${this.entityName}.id = :entityId`, { entityId })
-      .getOne();
-
-    assertFoundEntity(entity);
-    assertBlockedEntity(entity);
-
-    await this.repository
-      .createQueryBuilder(this.entityName)
-      .update()
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      .set({ blockedAt: null, blockedReason: null } as QueryDeepPartialEntity<Entity>)
-      .where(`${this.entityName}.id = :entityId`, { entityId })
-      .execute();
-
-    return this.getById(entityId, {});
+  unblock = async (entityId: Entity["id"]) => {
+    return this.updateBlockedReason(entityId, { blockedReason: null });
   };
 }

@@ -1,15 +1,11 @@
 import { IsUUID } from "@constraints";
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, DeleteDateColumn, Entity } from "typeorm";
+import { Column, Entity } from "typeorm";
 
 import { BaseEntity } from "../base/base.entity";
 
 @Entity()
 export class FileEntity extends BaseEntity {
-  @ApiProperty({ description: "Дата удаления", example: "Mon, 05 Feb 2024 12:23:37 GMT" })
-  @DeleteDateColumn({ nullable: true, select: false, type: "timestamp" })
-  deletedAt?: Date;
-
   @ApiProperty({ description: "Название файла", example: "конь-огонь" })
   @IsUUID()
   @Column({ type: String })

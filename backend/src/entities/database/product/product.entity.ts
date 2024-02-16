@@ -2,7 +2,7 @@ import { IsArray, IsBoolean, IsNumber, IsString } from "@constraints";
 import { ApiProperty } from "@nestjs/swagger";
 import { TransformBoolean, TransformJSON, TransformNumber } from "@transform";
 import { SoftDeleteEntity } from "@utility/soft-delete/soft-delete.entity";
-import { Column, Entity, OneToMany } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from "typeorm";
 
 import { ProductImage } from "../product-image/product-image.entity";
 
@@ -10,12 +10,19 @@ import { ProductImage } from "../product-image/product-image.entity";
 export class Product extends SoftDeleteEntity {
   // Это копия из HiddenStateEntity. Сделана из-за невозможности множественного наследования
   @ApiProperty({ description: "Дата скрытия", example: "Mon, 05 Feb 2024 12:23:37 GMT" })
-  @Column({ default: () => "CURRENT_TIMESTAMP", type: "timestamp" })
+  @Column({ nullable: true, type: "timestamp" })
   hiddenAt: Date;
 
   @ApiProperty({ description: "Причина скрытия", example: "Закончились остатки товара, пока нет планов производить" })
-  @Column({ nullable: true, select: false, type: "varchar" })
+  @IsString()
+  @Column({ nullable: true, type: "varchar" })
   hiddenReason?: string;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  updateHiddenAt() {
+    this.hiddenAt = !this.hiddenReason ? null : new Date();
+  }
   // ----------------------------------------------------------------------------------------
 
   @ApiProperty({ description: "Артикул продавца", example: "12345" })

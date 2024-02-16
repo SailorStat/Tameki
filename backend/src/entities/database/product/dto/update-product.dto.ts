@@ -3,7 +3,7 @@ import { IsOptional } from "class-validator";
 
 import { Product } from "../product.entity";
 
-export default class UpdateProductDto extends PartialType(
+export default class ProductUpdateDto extends PartialType(
   PickType(Product, [
     "article",
     "description",

@@ -10,19 +10,19 @@ import { assertFoundEntity } from "src/asserts/http.assert";
 import { getWhereParams } from "src/utils/getWhereParams";
 import { Repository, SelectQueryBuilder } from "typeorm";
 
-import CreateProductDto from "./dto/create-product.dto";
-import GetAllProductsDto from "./dto/get-all-products.dto";
-import GetProductDto from "./dto/get-product..dto";
-import UpdateProductDto from "./dto/update-product.dto";
+import ProductCreateDto from "./dto/create-product.dto";
+import ProductGetAllDto from "./dto/get-all-products.dto";
+import ProductGetDto from "./dto/get-product..dto";
+import ProductUpdateDto from "./dto/update-product.dto";
 import { Product } from "./product.entity";
 
 @Injectable()
 export class ProductService extends BaseService<
   Product,
-  GetProductDto,
-  GetAllProductsDto,
-  CreateProductDto,
-  UpdateProductDto
+  ProductGetDto,
+  ProductGetAllDto,
+  ProductCreateDto,
+  ProductUpdateDto
 > {
   readonly entityName: string = "product";
 
@@ -41,7 +41,7 @@ export class ProductService extends BaseService<
 
   protected getProductModify = (
     queryBuilder: SelectQueryBuilder<Product>,
-    _?: GetProductDto,
+    _?: ProductGetDto,
   ): SelectQueryBuilder<Product> =>
     queryBuilder.leftJoinAndSelect(`${this.entityName}.images`, this.productImageService.entityName);
 
@@ -53,7 +53,7 @@ export class ProductService extends BaseService<
     return getWhereParams(params, product);
   };
 
-  getAll = async (getAllProductsDto: GetAllProductsDto): Promise<Product[]> => {
+  getAll = async (getAllProductsDto: ProductGetAllDto): Promise<Product[]> => {
     const { limit = 20, page = 1 } = getAllProductsDto;
 
     const queryBuilder = this.repository
@@ -68,7 +68,7 @@ export class ProductService extends BaseService<
     return this.softDeleteService.getSoftDeleteModify(queryBuilder, getAllProductsDto).getMany();
   };
 
-  getByParams = async (getByParamsDto: Partial<GetProductDto & Product>): Promise<Product> => {
+  getByParams = async (getByParamsDto: Partial<Product & ProductGetDto>): Promise<Product> => {
     const queryBuilder = this.repository.createQueryBuilder(this.entityName).where(this.getWhereParams(getByParamsDto));
 
     this.getProductModify(queryBuilder);
@@ -82,7 +82,7 @@ export class ProductService extends BaseService<
     return product;
   };
 
-  getById = async (productId: number, getProductDto: GetProductDto): Promise<Product> => {
+  getById = async (productId: number, getProductDto: ProductGetDto): Promise<Product> => {
     const queryBuilder = this.repository
       .createQueryBuilder(this.entityName)
       .where(`${this.entityName}.id = :productId`, { productId });
@@ -98,11 +98,8 @@ export class ProductService extends BaseService<
     return product;
   };
 
-  create = async ({ images, ...createDto }: CreateProductDto) => {
+  create = async ({ images, ...createDto }: ProductCreateDto) => {
     const toCreateEntity = this.repository.create(createDto);
-
-    createDto.hiddenReason && (toCreateEntity.hiddenAt = new Date());
-
     const createdProduct = await this.repository.save(toCreateEntity);
 
     await Promise.allSettled(

@@ -16,11 +16,11 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { HiddenStateHideDto } from "@utility/hidden-state/dto/hide-hidden-state.dto";
 import { SoftDeleteDeleteDto } from "@utility/soft-delete/dto/delete-soft-delete.dto";
 
-import CreateProductDto from "./dto/create-product.dto";
-import GetAllProductsDto from "./dto/get-all-products.dto";
-import GetProductByParamsDto from "./dto/get-by-params-product..dto";
-import GetProductDto from "./dto/get-product..dto";
-import UpdateProductDto from "./dto/update-product.dto";
+import ProductCreateDto from "./dto/create-product.dto";
+import ProductGetAllDto from "./dto/get-all-products.dto";
+import ProductGetByParamsDto from "./dto/get-by-params-product.dto";
+import ProductGetDto from "./dto/get-product..dto";
+import ProductUpdateDto from "./dto/update-product.dto";
 import { PRODUCT_BASE_URL, URL_PRODUCT_ID_PARAM } from "./product.constants";
 import { Product } from "./product.entity";
 import { ProductService } from "./product.service";
@@ -33,7 +33,7 @@ export class ProductController {
   @ApiOperation({ description: "Получить список всех доступных товаров", summary: "Получить все товары" })
   @ApiResponse({ description: "Успешный поиск товаров", status: HttpStatus.OK, type: [Product] })
   @Get()
-  async getAll(@Query() getAllProductsDto: GetAllProductsDto) {
+  async getAll(@Query() getAllProductsDto: ProductGetAllDto) {
     const product = await this.productService.getAll(getAllProductsDto);
 
     return product;
@@ -43,8 +43,8 @@ export class ProductController {
   @ApiResponse({ description: "Успешное создание товара", status: HttpStatus.CREATED, type: Product })
   @UseInterceptors(FilesInterceptor("images"))
   @Post()
-  async create(@Body() createProductDto: CreateProductDto, @UploadedFiles() images) {
-    const product = await this.productService.create({ ...createProductDto, images });
+  async create(@Body() createDto: ProductCreateDto, @UploadedFiles() images = []) {
+    const product = await this.productService.create({ ...createDto, images });
 
     return product;
   }
@@ -52,7 +52,7 @@ export class ProductController {
   @ApiOperation({ description: "Получить товар", summary: "Получить товар" })
   @ApiResponse({ description: "Успешный поиск товаров", status: HttpStatus.OK, type: Product })
   @Get("/product")
-  async getByParams(@Query() getProductDto: GetProductByParamsDto) {
+  async getByParams(@Query() getProductDto: ProductGetByParamsDto) {
     const product = await this.productService.getByParams(getProductDto);
 
     return product;
@@ -61,7 +61,7 @@ export class ProductController {
   @ApiOperation({ description: "Получить товар", summary: "Получить товар" })
   @ApiResponse({ description: "Успешный поиск товаров", status: HttpStatus.OK, type: Product })
   @Get(`/:${URL_PRODUCT_ID_PARAM}`)
-  async getById(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Query() getProductDto: GetProductDto) {
+  async getById(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Query() getProductDto: ProductGetDto) {
     const product = await this.productService.getById(productId, getProductDto);
 
     return product;
@@ -70,7 +70,7 @@ export class ProductController {
   @ApiOperation({ description: "Редактировать товар", summary: "Редактировать товар" })
   @ApiResponse({ description: "Успешное редактирование товара", status: HttpStatus.OK, type: Product })
   @Patch(`/:${URL_PRODUCT_ID_PARAM}`)
-  async update(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Body() updateProductDto: UpdateProductDto) {
+  async update(@Param(URL_PRODUCT_ID_PARAM) productId: number, @Body() updateProductDto: ProductUpdateDto) {
     const updatedProduct = await this.productService.update(productId, updateProductDto);
 
     return updatedProduct;
