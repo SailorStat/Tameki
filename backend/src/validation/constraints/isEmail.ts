@@ -12,7 +12,7 @@ export function IsEmail(validationOptions?: ValidationOptions) {
       target: object.constructor,
       validator: {
         defaultMessage(validationArguments: ValidationArguments) {
-          return createValidationMessage(validationArguments, validationOptions, "должно быть датой");
+          return createValidationMessage(validationArguments, validationOptions, "должно быть email");
         },
         validate(value: any, _: ValidationArguments) {
           return isEmail(value);

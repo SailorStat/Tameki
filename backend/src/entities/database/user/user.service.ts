@@ -1,4 +1,4 @@
-import { Role } from "@database/role/role.entity";
+import { RoleService } from "@database/role/role.service";
 import { UserImageService } from "@database/user-image/user-image.service";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -9,7 +9,7 @@ import { SoftDeleteDeleteDto } from "@utility/soft-delete/dto/delete-soft-delete
 import { SoftDeleteService } from "@utility/soft-delete/soft-delete.service";
 import { assertFoundEntity } from "src/asserts/http.assert";
 import { getWhereParams } from "src/utils/getWhereParams";
-import { In, Repository, SelectQueryBuilder } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 
 import { UserCreateDto } from "./dto/create-user.dto";
 import { UserGetAllDto } from "./dto/get-all-user.dto";
@@ -28,18 +28,24 @@ export class UserService extends BaseService<User, UserGetDto, UserGetAllDto, Us
   constructor(
     @InjectRepository(User) protected readonly repository: Repository<User>,
     protected readonly userImageService: UserImageService,
-    @InjectRepository(Role) protected readonly roleRepository: Repository<Role>,
+    protected readonly roleService: RoleService,
   ) {
     super(repository);
     this.softDeleteService = new SoftDeleteService(repository, this.entityName);
     this.blockedStateService = new BlockedStateService(repository, this.entityName);
   }
 
-  protected getUserModify = (queryBuilder: SelectQueryBuilder<User>, _?: UserGetDto): SelectQueryBuilder<User> =>
-    queryBuilder
+  protected getUserModify = (
+    queryBuilder: SelectQueryBuilder<User>,
+    { selectPassword = false }: UserGetDto,
+  ): SelectQueryBuilder<User> => {
+    selectPassword && queryBuilder.addSelect(`${this.entityName}.password`);
+
+    return queryBuilder
       .leftJoinAndSelect(`${this.entityName}.images`, "images")
       .leftJoinAndSelect(`${this.entityName}.roles`, "roles")
       .addSelect(["roles.name"]);
+  };
 
   protected getWhereParams = (params: object): Partial<User> => {
     const user = new User();
@@ -63,16 +69,16 @@ export class UserService extends BaseService<User, UserGetDto, UserGetAllDto, Us
     return this.softDeleteService.getSoftDeleteModify(queryBuilder, getAllUsersDto).getMany();
   };
 
-  getByParams = async (getByParamsDto: Partial<User & UserGetDto>): Promise<User> => {
+  getByParams = async ({ withNotFound, ...getByParamsDto }: Partial<User & UserGetDto>): Promise<User> => {
     const queryBuilder = this.repository.createQueryBuilder(this.entityName).where(this.getWhereParams(getByParamsDto));
 
-    this.getUserModify(queryBuilder);
+    this.getUserModify(queryBuilder, getByParamsDto);
     this.getBaseModify(queryBuilder, getByParamsDto);
     this.blockedStateService.getBlockedStateModify(queryBuilder, getByParamsDto);
 
     const user = await this.softDeleteService.getSoftDeleteModify(queryBuilder, getByParamsDto).getOne();
 
-    assertFoundEntity(user);
+    withNotFound || assertFoundEntity(user);
 
     return user;
   };
@@ -82,7 +88,7 @@ export class UserService extends BaseService<User, UserGetDto, UserGetAllDto, Us
       .createQueryBuilder(this.entityName)
       .where(`${this.entityName}.id = :userId`, { userId });
 
-    this.getUserModify(queryBuilder);
+    this.getUserModify(queryBuilder, getUserDto);
     this.getBaseModify(queryBuilder, getUserDto);
     this.blockedStateService.getBlockedStateModify(queryBuilder, getUserDto);
 
@@ -94,25 +100,23 @@ export class UserService extends BaseService<User, UserGetDto, UserGetAllDto, Us
   };
 
   create = async ({ images, roleNames, ...createDto }: UserCreateDto) => {
-    const user = this.repository.create(createDto);
+    const createdUser = this.repository.create(createDto);
 
-    const roles = await this.roleRepository.find({ where: { name: In(roleNames) } });
+    createdUser.roles = await this.roleService.getAllByNames(roleNames);
 
-    user.roles = roles;
-
-    const createdUser = await this.repository.save(user);
+    const savedUser = await this.repository.save(createdUser);
 
     await Promise.allSettled(
       images.map(async (image) => {
-        await this.userImageService.save(image, createdUser.id);
+        await this.userImageService.save(image, savedUser.id);
       }),
     );
 
     const queryBuilder = this.repository
       .createQueryBuilder(this.entityName)
-      .where(`${this.entityName}.id = :userId`, { userId: createdUser.id });
+      .where(`${this.entityName}.id = :userId`, { userId: savedUser.id });
 
-    return this.getUserModify(queryBuilder).getOne();
+    return this.getUserModify(queryBuilder, {}).getOne();
   };
 
   delete = async (userId: number, deletableDto: SoftDeleteDeleteDto) => {

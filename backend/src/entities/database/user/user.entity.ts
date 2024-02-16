@@ -38,7 +38,7 @@ export class User extends SoftDeleteEntity {
 
   @ApiProperty({ description: "Email пользователя", example: "john@example.com" })
   @IsEmail()
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @ApiProperty({ description: "Пароль пользователя", example: "john@example.com" })
@@ -61,7 +61,7 @@ export class User extends SoftDeleteEntity {
   @ApiProperty({ description: "Ник пользователя", example: "john_doe" })
   @IsOptional()
   @IsString()
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   nickname?: string;
 
   @ApiProperty({ description: "ID пользователя в VK", example: "123456789" })

@@ -1,22 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UploadedFiles,
-  UseInterceptors,
-} from "@nestjs/common";
-import { FilesInterceptor } from "@nestjs/platform-express";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Query } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { BlockedStateBlockDto } from "@utility/blocked-state/dto/block-blocked-state.dto";
 import { SoftDeleteDeleteDto } from "@utility/soft-delete/dto/delete-soft-delete.dto";
 
-import { UserCreateDto } from "./dto/create-user.dto";
 import { UserGetAllDto } from "./dto/get-all-user.dto";
 import { UserGetByParamsDto } from "./dto/get-by-params-user.dto";
 import { UserGetDto } from "./dto/get-user.dto";
@@ -35,16 +21,6 @@ export class UserController {
   @Get()
   async getAll(@Query() getAllDto: UserGetAllDto) {
     const user = await this.userService.getAll(getAllDto);
-
-    return user;
-  }
-
-  @ApiOperation({ description: "Создать пользователя", summary: "Создать пользователя" })
-  @ApiResponse({ description: "Успешное создание пользователя", status: HttpStatus.CREATED, type: User })
-  @UseInterceptors(FilesInterceptor("images"))
-  @Post()
-  async create(@Body() createDto: UserCreateDto, @UploadedFiles() images = []) {
-    const user = await this.userService.create({ ...createDto, images });
 
     return user;
   }

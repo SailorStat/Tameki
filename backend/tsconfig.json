@@ -17,6 +17,7 @@
       "@database/*": ["src/entities/database/*"],
       "@transform": ["src/validation/transform"],
       "@constraints": ["src/validation/constraints"],
+      "@guards/*": ["src/guards/*"],
     }
   }
 }

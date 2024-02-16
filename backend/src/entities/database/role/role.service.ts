@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "@utility/base/base.service";
 import { assertFoundEntity } from "src/asserts/http.assert";
 import { getWhereParams } from "src/utils/getWhereParams";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 
 import { RoleCreateDto } from "./dto/create-role.dto";
 import { RoleGetAllDto } from "./dto/get-all-role.dto";
@@ -25,6 +25,14 @@ export class RoleService extends BaseService<Role, RoleGetDto, RoleGetAllDto, Ro
 
     return getWhereParams(params, product);
   };
+
+  async getAllByNames(roleNames: RoleNames[]): Promise<Role[]> {
+    const roles = await this.repository.find({ where: { name: In(roleNames) } });
+
+    assertFoundEntity(roles);
+
+    return roles;
+  }
 
   async getByName(roleName: RoleNames): Promise<Role> {
     const queryBuilder = await this.repository
