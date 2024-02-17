@@ -36,9 +36,8 @@ export class BaseService<
     const { page = 1, limit = 20, orderBy = { [`${this.entityName}.id`]: "ASC" } } = params;
 
     queryBuilder
-      .where(
-        `${this.entityName}.id = (SELECT "id" FROM "${this.entityName}" ORDER BY "id" ASC LIMIT ${limit} OFFSET ${(page - 1) * limit})`,
-      )
+      .take(limit)
+      .offset((page - 1) * limit)
       .orderBy(orderBy);
     this.getBaseModify(queryBuilder, params);
 

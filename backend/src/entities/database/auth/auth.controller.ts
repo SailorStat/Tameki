@@ -1,6 +1,5 @@
 import { UserCreateDto } from "@database/user/dto/create-user.dto";
-import { LocalAuthGuard } from "@guards/LocalAuthGuard";
-import { Body, Controller, HttpStatus, Post, Request, UploadedFiles, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, HttpStatus, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
@@ -15,12 +14,11 @@ export class AuthController {
 
   @ApiOperation({ description: "Авторизация", summary: "Авторизация" })
   @ApiResponse({ description: "Успешная авторизация пользователя", status: HttpStatus.OK })
-  @UseGuards(LocalAuthGuard)
   @Post("/login")
-  async login(@Request() req) {
-    // const product = await this.authService.login(authLoginDto);
+  async login(@Body() authLoginDto: AuthLoginDto) {
+    const user = await this.authService.login(authLoginDto);
 
-    return req.user;
+    return user;
   }
 
   @ApiOperation({ description: "Создать пользователя", summary: "Создать пользователя" })

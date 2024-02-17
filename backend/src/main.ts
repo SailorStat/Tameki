@@ -9,9 +9,9 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const port = process.env.PORT || 3000;
   const app = await NestFactory.create(AppModule);
-  const jwtService = app.get(JwtService);
+  // const jwtService = app.get(JwtService);
+  // app.useGlobalGuards(new JwtAuthGuard(jwtService));
 
-  app.useGlobalGuards(new JwtAuthGuard(jwtService));
   app.useGlobalPipes(
     new ValidationPipe({
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,

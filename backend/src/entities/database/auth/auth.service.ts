@@ -12,8 +12,8 @@ import { AuthLoginDto } from "./dto/login-auth.dto";
 @Injectable()
 export class AuthService {
   constructor(
-    protected readonly userService: UserService,
     protected readonly jwtService: JwtService,
+    protected readonly userService: UserService,
   ) {}
 
   protected generateToken = ({ email, password, roles }: User) => ({

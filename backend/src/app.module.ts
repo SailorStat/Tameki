@@ -6,7 +6,6 @@ import { UserImageModule } from "@database/user-image/user-image.module";
 import { JwtAuthGuard } from "@guards/jwt-auth.guard";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { JwtModule } from "@nestjs/jwt";
 import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -17,7 +16,6 @@ import { AuthModule } from "./entities/database/auth/auth.module";
 @Module({
   controllers: [],
   imports: [
-    JwtModule.register({ secret: process.env.PRIVATE_KEY || "SECRET", signOptions: { expiresIn: "24h" } }),
     ConfigModule.forRoot({ envFilePath: `${process.env.NODE_ENV === "development" ? ".development" : ""}.env` }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

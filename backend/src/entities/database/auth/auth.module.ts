@@ -8,7 +8,10 @@ import { AuthService } from "./auth.service";
 @Module({
   controllers: [AuthController],
   exports: [AuthModule, JwtModule],
-  imports: [forwardRef(() => UserModule)],
+  imports: [
+    JwtModule.register({ secret: process.env.PRIVATE_KEY || "SECRET", signOptions: { expiresIn: "24h" } }),
+    forwardRef(() => UserModule),
+  ],
   providers: [AuthService],
 })
 export class AuthModule {}

@@ -27,7 +27,7 @@ export class HiddenStateService<
     queryBuilder: SelectQueryBuilder<Entity>,
     { searchHidden }: HiddenStateGetDto,
   ): SelectQueryBuilder<Entity> => {
-    !searchHidden && queryBuilder.andWhere(`${this.entityName}.hiddenAt IS NULL`);
+    !searchHidden && queryBuilder.andWhere(`${this.entityName}.hiddenReason IS NULL`);
 
     return queryBuilder;
   };

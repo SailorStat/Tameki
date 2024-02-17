@@ -10,7 +10,7 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     try {
-      const authHeader = request.headers.Authorization;
+      const authHeader = request.headers.authorization;
       const [bearer, token] = authHeader.split(" ");
 
       if (bearer !== "Bearer" || !token) {
