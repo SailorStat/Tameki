@@ -16,11 +16,11 @@ export class AuthService {
     protected readonly userService: UserService,
   ) {}
 
-  protected generateToken = ({ email, password, roles }: User) => ({
-    token: this.jwtService.sign({ email, password, roles }),
+  generateToken = ({ email, password, roles }: User) => ({
+    access_token: this.jwtService.sign({ email, password, roles }),
   });
 
-  protected validateUser = async (authLoginDto: AuthLoginDto) => {
+  validateUser = async (authLoginDto: AuthLoginDto) => {
     const user = await this.userService.getByParams({ email: authLoginDto.email, selectPassword: true });
 
     const passwordValid = await bcryptjs.compare(authLoginDto.password, user.password);

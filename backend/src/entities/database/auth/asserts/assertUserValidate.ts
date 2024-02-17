@@ -1,7 +1,7 @@
-import { UnauthorizedException } from "@nestjs/common";
+import { UncorrectAuthorization } from "src/exceptions/uncorrect-authorization.exception";
 
 export default function assertUserValidate(passwordValid: boolean): asserts passwordValid is true {
   if (!passwordValid) {
-    throw new UnauthorizedException({ message: "Email или пароль введены неверно" });
+    throw new UncorrectAuthorization();
   }
 }

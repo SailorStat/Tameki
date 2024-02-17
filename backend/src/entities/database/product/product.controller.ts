@@ -1,4 +1,3 @@
-import { JwtAuthGuard } from "@guards/jwt-auth.guard";
 import {
   Body,
   Controller,
@@ -10,7 +9,6 @@ import {
   Post,
   Query,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
@@ -34,7 +32,6 @@ export class ProductController {
 
   @ApiOperation({ description: "Получить список всех доступных товаров", summary: "Получить все товары" })
   @ApiResponse({ description: "Успешный поиск товаров", status: HttpStatus.OK, type: [Product] })
-  @UseGuards(JwtAuthGuard)
   @Get()
   async getAll(@Query() getAllProductsDto: ProductGetAllDto) {
     const products = await this.productService.getAll(getAllProductsDto);

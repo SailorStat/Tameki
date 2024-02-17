@@ -1,29 +1,43 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
+import { ExecutionContext, Injectable, SetMetadata } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { AuthGuard } from "@nestjs/passport";
 import { Observable } from "rxjs";
+import { UnauthorizedException } from "src/exceptions/unauthorized.exception";
+
+const PUBLIC_ROUTE_KEY = "public-route";
+
+export const PublicRoute = () => SetMetadata(PUBLIC_ROUTE_KEY, true);
+
+// TODO: добавить зависимость от ролей
+// TODO: добавить зависимость от id пользователя
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
-  constructor(protected readonly jwtService: JwtService) {}
+export class JwtAuthGuard extends AuthGuard("jwt") {
+  constructor(protected readonly reflector: Reflector) {
+    super({ passwordField: "password", usernameField: "email" });
+  }
 
   canActivate(context: ExecutionContext): Observable<boolean> | Promise<boolean> | boolean {
-    const request = context.switchToHttp().getRequest();
+    const isPublicRoute = this.reflector.get<boolean>(PUBLIC_ROUTE_KEY, context.getHandler());
 
-    try {
-      const authHeader = request.headers.authorization;
-      const [bearer, token] = authHeader.split(" ");
-
-      if (bearer !== "Bearer" || !token) {
-        throw new UnauthorizedException({ message: "Пользователь не авторизован" });
-      }
-
-      const user = this.jwtService.verify(token);
-
-      request.user = user;
-
+    if (isPublicRoute) {
       return true;
-    } catch (e) {
-      throw new UnauthorizedException({ message: "Пользователь не авторизован" });
     }
+
+    const request: Request = context.switchToHttp().getRequest();
+
+    if (request.method === "GET") {
+      return true;
+    }
+
+    return super.canActivate(context);
+  }
+
+  handleRequest(err: any, user: any, _: any, __: ExecutionContext) {
+    if (err || !user) {
+      throw err || new UnauthorizedException();
+    }
+
+    return user;
   }
 }
