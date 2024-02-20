@@ -32,7 +32,7 @@ export class Product extends SoftDeleteEntity {
 
   @ApiProperty({ description: "Описание товара", example: "Очень хороший товар, купили всей семьёй" })
   @IsString()
-  @Column({ nullable: false })
+  @Column()
   description: string;
 
   @ApiProperty({ description: "Средняя оценка товара", example: 80 })
@@ -53,7 +53,7 @@ export class Product extends SoftDeleteEntity {
 
   @ApiProperty({ description: "Количество штук в наличии", example: 15 })
   @IsNumber()
-  @Column({ default: 0, nullable: false })
+  @Column({ default: 0 })
   @TransformNumber()
   inStock: number;
 
@@ -66,7 +66,7 @@ export class Product extends SoftDeleteEntity {
 
   @ApiProperty({ description: "Цена", example: 99 })
   @IsNumber()
-  @Column({ nullable: false })
+  @Column()
   @TransformNumber()
   price: number;
 
@@ -84,6 +84,6 @@ export class Product extends SoftDeleteEntity {
 
   @ApiProperty({ description: "Название товара", example: "Пример продукта" })
   @IsString()
-  @Column({ nullable: false })
+  @Column()
   title: string;
 }

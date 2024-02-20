@@ -1,4 +1,5 @@
 import { IsEmail, IsString, Length } from "@constraints";
+import { Auth } from "@database/auth/auth.entity";
 import { Role } from "@database/role/role.entity";
 import { UserImage } from "@database/user-image/user-image.entity";
 import { ApiProperty } from "@nestjs/swagger";
@@ -23,6 +24,10 @@ export class User extends SoftDeleteEntity {
     this.blockedAt = !this.blockedReason ? null : new Date();
   }
   // -------------------------------------------------
+
+  @ApiProperty({ description: "Список авторизаций пользователя" })
+  @OneToMany(() => Auth, (auth) => auth.user)
+  authorizations: Auth[];
 
   @ApiProperty({ description: "Имя пользователя", example: "John" })
   @IsString()

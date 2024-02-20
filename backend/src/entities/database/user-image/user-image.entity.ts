@@ -11,7 +11,7 @@ export class UserImage extends Image {
   @ApiProperty({ description: "ID товара", example: 1234 })
   @IsNumber()
   @TransformNumber()
-  @Column({ nullable: false })
+  @Column()
   userId: number;
 
   @ManyToOne(() => User, (user) => user.images)

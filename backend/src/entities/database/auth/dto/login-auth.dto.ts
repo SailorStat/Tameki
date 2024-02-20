@@ -1,4 +1,6 @@
 import { User } from "@database/user/user.entity";
-import { PickType } from "@nestjs/swagger";
+import { IntersectionType, PickType } from "@nestjs/swagger";
 
-export class AuthLoginDto extends PickType(User, ["email", "password"]) {}
+import { AuthSessionDto } from "./session-auth.dto";
+
+export class AuthLoginDto extends IntersectionType(PickType(User, ["email", "password"]), AuthSessionDto) {}

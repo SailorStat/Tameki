@@ -9,12 +9,12 @@ import { RoleNames } from "./role.constants";
 
 @Entity()
 export class Role extends BaseEntity {
-  @Column({ nullable: false })
+  @Column()
   @IsEnum(RoleNames)
   @ApiProperty({ description: "Роль", example: "Название роли" })
   name: RoleNames;
 
-  @Column({ nullable: false })
+  @Column()
   @IsString()
   @ApiProperty({ description: "Описание роли", example: "Полный доступ к базе данных" })
   description: string;

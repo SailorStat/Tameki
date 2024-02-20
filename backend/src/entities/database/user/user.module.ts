@@ -1,6 +1,5 @@
-import { AuthModule } from "@database/auth/auth.module";
 import { RoleModule } from "@database/role/role.module";
-import { forwardRef, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { UserImageModule } from "../user-image/user-image.module";
@@ -11,7 +10,7 @@ import { UserService } from "./user.service";
 @Module({
   controllers: [UserController],
   exports: [UserService],
-  imports: [TypeOrmModule.forFeature([User]), UserImageModule, RoleModule, forwardRef(() => AuthModule)],
+  imports: [TypeOrmModule.forFeature([User]), UserImageModule, RoleModule],
   providers: [UserService],
 })
 export class UserModule {}

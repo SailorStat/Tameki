@@ -1,28 +1,60 @@
-import { UserCreateDto } from "@database/user/dto/create-user.dto";
-import { User } from "@database/user/user.entity";
 import { UserService } from "@database/user/user.service";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { InjectRepository } from "@nestjs/typeorm";
 import * as bcryptjs from "bcryptjs";
+import { isDateWithinDays } from "src/utils/isDateWithinDays";
+import { Repository } from "typeorm";
 
+import assertSessionValidate from "./asserts/assertSessionValidate";
 import assertUserCandidate from "./asserts/assertUserCandidate";
 import assertUserValidate from "./asserts/assertUserValidate";
+import { Auth } from "./auth.entity";
+import { AuthGenerateTokenDto } from "./dto/generate-token-auth.dto";
 import { AuthLoginDto } from "./dto/login-auth.dto";
+import { AuthRegistrationDto } from "./dto/registration-auth.dto";
+import { AuthValidateSessionDto } from "./dto/validate-session-auth.dto";
 
 @Injectable()
 export class AuthService {
+  entityName = "auth";
+
   constructor(
     protected readonly jwtService: JwtService,
-    protected readonly userService: UserService,
+    @Inject(UserService) protected readonly userService: UserService,
+    @InjectRepository(Auth) protected readonly authRepository: Repository<Auth>,
   ) {}
 
-  generateToken = ({ email, password, roles }: User) => ({
-    access_token: this.jwtService.sign({ email, password, roles }),
-  });
+  protected generateToken = async (params: AuthGenerateTokenDto): Promise<{ accessToken: string }> => {
+    const authSession = this.authRepository.create(params);
+    const savedAuthSession = await this.authRepository.save(authSession);
+
+    return { accessToken: savedAuthSession.accessToken };
+  };
+
+  validateSession = async (authSessionDto: AuthValidateSessionDto): Promise<{ accessToken: string }> => {
+    const authSession = await this.authRepository
+      .createQueryBuilder(this.entityName)
+      .leftJoinAndSelect(`${this.entityName}.user`, this.userService.entityName)
+      .where(`${this.entityName}.accessToken = :accessToken`, { accessToken: authSessionDto.accessToken })
+      .getOne();
+
+    assertSessionValidate(!!authSession);
+    assertSessionValidate(isDateWithinDays(authSession.createdAt, 7));
+
+    if (!isDateWithinDays(authSession.createdAt, 1)) {
+      return this.generateToken({
+        device: authSessionDto.device,
+        previousRefreshToken: authSession.refreshToken,
+        user: authSession.user,
+      });
+    }
+
+    return authSessionDto;
+  };
 
   validateUser = async (authLoginDto: AuthLoginDto) => {
     const user = await this.userService.getByParams({ email: authLoginDto.email, selectPassword: true });
-
     const passwordValid = await bcryptjs.compare(authLoginDto.password, user.password);
 
     assertUserValidate(passwordValid);
@@ -33,18 +65,17 @@ export class AuthService {
   login = async (authLoginDto: AuthLoginDto) => {
     const user = await this.validateUser(authLoginDto);
 
-    return this.generateToken(user);
+    return this.generateToken({ device: authLoginDto.device, user });
   };
 
-  registration = async (userDto: UserCreateDto) => {
-    const foundUser = await this.userService.getByParams({ email: userDto.email, withNotFound: true });
+  registration = async (authRegistrationDto: AuthRegistrationDto) => {
+    const foundUser = await this.userService.getByParams({ email: authRegistrationDto.email, withNotFound: true });
 
     assertUserCandidate(foundUser);
 
-    const hashPassword = await bcryptjs.hash(userDto.password, 5);
-    const user = await this.userService.create({ ...userDto, password: hashPassword });
+    const hashPassword = await bcryptjs.hash(authRegistrationDto.password, 5);
+    const user = await this.userService.create({ ...authRegistrationDto, password: hashPassword });
 
-    return this.generateToken(user);
+    return this.generateToken({ device: authRegistrationDto.device, user });
   };
 }
-// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG4xMjEzNEBleGFtcGxlLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwiY3JlYXRlZEF0IjoiMjAyNC0wMi0xNlQxNDoyMjozMS44MDZaIiwidXBkYXRlZEF0IjoiMjAyNC0wMi0xNlQxNDoyMjozMS44MDZaIiwibmFtZSI6ImFkbWluIiwiZGVzY3JpcHRpb24iOiLQn9C-0LvQvdGL0Lkg0LTQvtGB0YLRg9C_INC6INCx0LDQt9C1INC00LDQvdC90YvRhSJ9LHsiaWQiOjIsImNyZWF0ZWRBdCI6IjIwMjQtMDItMTZUMTQ6MjI6NTIuODA2WiIsInVwZGF0ZWRBdCI6IjIwMjQtMDItMTZUMTQ6MjI6NTIuODA2WiIsIm5hbWUiOiJ1c2VyIiwiZGVzY3JpcHRpb24iOiLQl9Cw0YDQtdCz0LjRgdGC0YDQuNGA0L7QstCw0L3QvdGL0Lkg0L_QvtC70YzQt9C-0LLQsNGC0LXQu9GMIn1dLCJpYXQiOjE3MDgwOTcwMzgsImV4cCI6MTcwODE4MzQzOH0.BhePdoLZO5ovE03D0x4VHHtEI9TRlskKz96rTjIykfs"

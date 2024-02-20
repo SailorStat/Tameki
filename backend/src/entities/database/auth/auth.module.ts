@@ -1,17 +1,20 @@
 import { UserModule } from "@database/user/user.module";
 import { JwtAuthGuard } from "@guards/jwt-auth.guard";
-import { forwardRef, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { JwtStrategy } from "src/strategies/jwt.strategy";
 
 import { AuthController } from "./auth.controller";
+import { Auth } from "./auth.entity";
 import { AuthService } from "./auth.service";
 
 @Module({
   controllers: [AuthController],
-  exports: [AuthModule, JwtModule],
+  exports: [AuthService, JwtModule],
   imports: [
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -21,9 +24,10 @@ import { AuthService } from "./auth.service";
         signOptions: { expiresIn: "1d" },
       }),
     }),
-    forwardRef(() => UserModule),
+    UserModule,
+    TypeOrmModule.forFeature([Auth]),
     PassportModule.register({ defaultStrategy: "jwt" }),
   ],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard],
+  providers: [AuthService, JwtStrategy, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AuthModule {}
