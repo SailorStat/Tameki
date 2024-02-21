@@ -8,7 +8,6 @@ import { BlockedStateBlockDto } from "@utility/blocked-state/dto/block-blocked-s
 import { SoftDeleteDeleteDto } from "@utility/soft-delete/dto/delete-soft-delete.dto";
 import { SoftDeleteService } from "@utility/soft-delete/soft-delete.service";
 import { assertFoundEntity } from "src/asserts/http.assert";
-import { getWhereParams } from "src/utils/getWhereParams";
 import { Repository, SelectQueryBuilder } from "typeorm";
 
 import { UserCreateDto } from "./dto/create-user.dto";
@@ -48,12 +47,12 @@ export class UserService extends BaseService<User, UserGetDto, UserGetAllDto, Us
   };
 
   protected getWhereParams = (params: object): Partial<User> => {
-    const user = new User();
+    const userWhere = this.repository.create(params);
 
-    delete user.images;
-    delete user.roles;
+    delete userWhere.images;
+    delete userWhere.roles;
 
-    return getWhereParams(params, user);
+    return userWhere;
   };
 
   getAll = async (getAllUsersDto: UserGetAllDto): Promise<User[]> => {

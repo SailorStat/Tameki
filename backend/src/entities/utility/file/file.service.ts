@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import * as fs from "fs";
 import { assertFoundEntity } from "src/asserts/http.assert";
 import { FileWriteError } from "src/exceptions/file-write-error.exception";
-import { getWhereParams } from "src/utils/getWhereParams";
 import { Repository } from "typeorm";
 
 import { BaseService } from "../base/base.service";
@@ -22,12 +21,6 @@ export class FileService extends BaseService<FileEntity> {
   ) {
     super(repository);
   }
-
-  protected getWhereParams = (params: object): Partial<FileEntity> => {
-    const product = new FileEntity();
-
-    return getWhereParams(params, product);
-  };
 
   protected createEntity = (file: Express.Multer.File): FileEntity => {
     const fileEntity = new this.FileBuilder();

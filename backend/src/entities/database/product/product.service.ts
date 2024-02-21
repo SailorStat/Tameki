@@ -7,7 +7,6 @@ import { HiddenStateService } from "@utility/hidden-state/hidden-state.service";
 import { SoftDeleteDeleteDto } from "@utility/soft-delete/dto/delete-soft-delete.dto";
 import { SoftDeleteService } from "@utility/soft-delete/soft-delete.service";
 import { assertFoundEntity } from "src/asserts/http.assert";
-import { getWhereParams } from "src/utils/getWhereParams";
 import { Repository, SelectQueryBuilder } from "typeorm";
 
 import ProductCreateDto from "./dto/create-product.dto";
@@ -46,11 +45,11 @@ export class ProductService extends BaseService<
     queryBuilder.leftJoinAndSelect(`${this.entityName}.images`, this.productImageService.entityName);
 
   protected getWhereParams = (params: object): Partial<Product> => {
-    const product = new Product();
+    const productWhere = this.repository.create(params);
 
-    delete product.images;
+    delete productWhere.images;
 
-    return getWhereParams(params, product);
+    return productWhere;
   };
 
   getAll = async (getAllProductsDto: ProductGetAllDto): Promise<Product[]> => {

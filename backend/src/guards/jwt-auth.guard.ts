@@ -26,7 +26,8 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
 
     const isPublicRoute = this.reflector.get<boolean>(PUBLIC_ROUTE_KEY, context.getHandler());
 
-    if (isPublicRoute || method === "GET") {
+    if (isPublicRoute) {
+      // || method === "GET") {
       return true;
     }
 
@@ -37,9 +38,9 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
     }
 
     const device = headers["user-agent"];
-    const { accessToken } = await this.authService.validateSession({ accessToken: oldAccessToken, device });
+    const token = await this.authService.validateSession({ accessToken: oldAccessToken, device });
 
-    accessToken !== oldAccessToken && response.cookie("Authorization", `Bearer ${accessToken}`, { httpOnly: true });
+    token !== oldAccessToken && response.cookie("Authorization", `Bearer ${token}`, { httpOnly: true });
 
     return true;
   };

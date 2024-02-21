@@ -25,14 +25,14 @@ export class AuthService {
     @InjectRepository(Auth) protected readonly authRepository: Repository<Auth>,
   ) {}
 
-  protected generateToken = async (params: AuthGenerateTokenDto): Promise<{ accessToken: string }> => {
+  protected generateToken = async (params: AuthGenerateTokenDto): Promise<string> => {
     const authSession = this.authRepository.create(params);
     const savedAuthSession = await this.authRepository.save(authSession);
 
-    return { accessToken: savedAuthSession.accessToken };
+    return savedAuthSession.accessToken;
   };
 
-  validateSession = async (authSessionDto: AuthValidateSessionDto): Promise<{ accessToken: string }> => {
+  validateSession = async (authSessionDto: AuthValidateSessionDto): Promise<string> => {
     const authSession = await this.authRepository
       .createQueryBuilder(this.entityName)
       .leftJoinAndSelect(`${this.entityName}.user`, this.userService.entityName)
@@ -50,7 +50,7 @@ export class AuthService {
       });
     }
 
-    return authSessionDto;
+    return authSessionDto.accessToken;
   };
 
   validateUser = async (authLoginDto: AuthLoginDto) => {
@@ -59,13 +59,16 @@ export class AuthService {
 
     assertUserValidate(passwordValid);
 
+    user.password = undefined;
+
     return user;
   };
 
   login = async (authLoginDto: AuthLoginDto) => {
     const user = await this.validateUser(authLoginDto);
+    const token = await this.generateToken({ device: authLoginDto.device, user });
 
-    return this.generateToken({ device: authLoginDto.device, user });
+    return { token, user };
   };
 
   registration = async (authRegistrationDto: AuthRegistrationDto) => {
@@ -75,7 +78,8 @@ export class AuthService {
 
     const hashPassword = await bcryptjs.hash(authRegistrationDto.password, 5);
     const user = await this.userService.create({ ...authRegistrationDto, password: hashPassword });
+    const token = await this.generateToken({ device: authRegistrationDto.device, user });
 
-    return this.generateToken({ device: authRegistrationDto.device, user });
+    return { token, user };
   };
 }

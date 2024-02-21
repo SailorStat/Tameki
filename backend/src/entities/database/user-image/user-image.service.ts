@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SaveFileReturnType } from "@utility/file/file.types";
 import { ImageService } from "@utility/image/image.service";
-import { getWhereParams } from "src/utils/getWhereParams";
 import { Repository } from "typeorm";
 
 import GetAllUserImageDto from "./dto/get-all-user-image.dto";
@@ -24,12 +23,6 @@ export class UserImageService extends ImageService {
   }
 
   protected declare createEntity: (file: Express.Multer.File) => UserImage;
-
-  protected getWhereParams = (params: object): Partial<UserImage> => {
-    const product = new UserImage();
-
-    return getWhereParams(params, product);
-  };
 
   save = async (file: Express.Multer.File, userId: number): SaveFileReturnType<UserImage> => {
     const uploadsPath = this.configService.get("UPLOADS_PATH");

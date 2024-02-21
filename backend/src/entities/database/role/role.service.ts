@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "@utility/base/base.service";
 import { assertFoundEntity } from "src/asserts/http.assert";
-import { getWhereParams } from "src/utils/getWhereParams";
 import { In, Repository } from "typeorm";
 
 import { RoleCreateDto } from "./dto/create-role.dto";
@@ -19,12 +18,6 @@ export class RoleService extends BaseService<Role, RoleGetDto, RoleGetAllDto, Ro
   constructor(@InjectRepository(Role) protected readonly repository: Repository<Role>) {
     super(repository);
   }
-
-  protected getWhereParams = (params: object): Partial<Role> => {
-    const product = new Role();
-
-    return getWhereParams(params, product);
-  };
 
   async getAllByNames(roleNames: RoleNames[]): Promise<Role[]> {
     const roles = await this.repository.find({ where: { name: In(roleNames) } });

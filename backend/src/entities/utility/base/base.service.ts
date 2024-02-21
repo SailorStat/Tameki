@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { assertFoundEntity } from "src/asserts/http.assert";
-import { getWhereParams } from "src/utils/getWhereParams";
 import { DeepPartial, Repository, SelectQueryBuilder } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 import { BaseEntity } from "../base/base.entity";
 import { BaseGetAllDto } from "./dto/get-all-base.dto";
 import { BaseGetDto } from "./dto/get-base.dto";
+
+function assertObject<T>(params: any): asserts params is DeepPartial<T> {}
 
 @Injectable()
 export class BaseService<
@@ -20,10 +21,12 @@ export class BaseService<
 
   constructor(protected readonly repository: Repository<Entity>) {}
 
-  protected getWhereParams = (params: object): Partial<BaseEntity> => {
-    const product = new BaseEntity();
+  protected getWhereParams = (params: object): Partial<Entity> => {
+    assertObject<Entity>(params);
 
-    return getWhereParams(params, product);
+    const entityWhere = this.repository.create(params);
+
+    return entityWhere;
   };
 
   protected getBaseModify = (queryBuilder: SelectQueryBuilder<Entity>, _: GetDto): SelectQueryBuilder<Entity> =>
