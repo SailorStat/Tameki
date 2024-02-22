@@ -1,4 +1,5 @@
 import { UserService } from "@database/user/user.service";
+import { RoleOptions } from "@guards/role.guard";
 import { Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -8,6 +9,7 @@ import { Repository } from "typeorm";
 
 import assertSessionValidate from "./asserts/assertSessionValidate";
 import assertUserCandidate from "./asserts/assertUserCandidate";
+import assertUserRoles from "./asserts/assertUserRoles";
 import assertUserValidate from "./asserts/assertUserValidate";
 import { Auth } from "./auth.entity";
 import { AuthGenerateTokenDto } from "./dto/generate-token-auth.dto";
@@ -32,14 +34,23 @@ export class AuthService {
     return savedAuthSession.accessToken;
   };
 
-  validateSession = async (authSessionDto: AuthValidateSessionDto): Promise<string> => {
-    const authSession = await this.authRepository
+  protected getUserSessionByAccessToken = async (accessToken: string, options?: { searchRoles?: boolean }) => {
+    const queryBuilder = this.authRepository
       .createQueryBuilder(this.entityName)
-      .leftJoinAndSelect(`${this.entityName}.user`, this.userService.entityName)
-      .where(`${this.entityName}.accessToken = :accessToken`, { accessToken: authSessionDto.accessToken })
-      .getOne();
+      .leftJoinAndSelect(`${this.entityName}.user`, this.userService.entityName);
+
+    options?.searchRoles && queryBuilder.leftJoinAndSelect(`${this.userService.entityName}.roles`, "role");
+
+    const authSession = queryBuilder.where(`${this.entityName}.accessToken = :accessToken`, { accessToken }).getOne();
 
     assertSessionValidate(!!authSession);
+
+    return authSession;
+  };
+
+  validateSession = async (authSessionDto: AuthValidateSessionDto): Promise<string> => {
+    const authSession = await this.getUserSessionByAccessToken(authSessionDto.accessToken);
+
     assertSessionValidate(isDateWithinDays(authSession.createdAt, 7));
 
     if (!isDateWithinDays(authSession.createdAt, 1)) {
@@ -62,6 +73,25 @@ export class AuthService {
     user.password = undefined;
 
     return user;
+  };
+
+  validateRole = async ({ accessToken, roleNames, requireEvery }: RoleOptions & { accessToken: string }) => {
+    const authSession = await this.getUserSessionByAccessToken(accessToken, { searchRoles: true });
+
+    assertUserValidate(!!authSession?.user);
+
+    const userRoles = authSession.user.roles;
+
+    if (!authSession?.user.roles) {
+      return false;
+    }
+
+    const userRoleNames = userRoles.map((userRole) => userRole.name);
+    const validRoles = await roleNames[requireEvery ? "every" : "some"]((roleName) => userRoleNames.includes(roleName));
+
+    assertUserRoles(validRoles);
+
+    return validRoles;
   };
 
   login = async (authLoginDto: AuthLoginDto) => {

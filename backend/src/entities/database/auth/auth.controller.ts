@@ -1,8 +1,9 @@
-import { PublicRoute } from "@guards/jwt-auth.guard";
+import { WithoutAuth } from "@guards/jwt-auth.guard";
 import { Body, Controller, HttpStatus, Post, Req, Res, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
+import { toBearerToken } from "src/utils/toBearerToken";
 
 import { AUTH_BASE_URL } from "./auth.constants";
 import { AuthService } from "./auth.service";
@@ -16,7 +17,7 @@ export class AuthController {
 
   @ApiOperation({ description: "Авторизация", summary: "Авторизация" })
   @ApiResponse({ description: "Успешная авторизация пользователя", status: HttpStatus.OK })
-  @PublicRoute()
+  @WithoutAuth()
   @Post("/login")
   async login(
     @Body() authLoginDto: AuthLoginDto,
@@ -25,7 +26,7 @@ export class AuthController {
   ) {
     const { token, user } = await this.authService.login({ ...authLoginDto, device: request.headers["user-agent"] });
 
-    response.cookie("Authorization", `Bearer ${token}`, { httpOnly: true });
+    response.cookie("Authorization", toBearerToken(token), { httpOnly: true });
 
     return user;
   }
@@ -33,7 +34,7 @@ export class AuthController {
   @ApiOperation({ description: "Создать пользователя", summary: "Создать пользователя" })
   @ApiResponse({ description: "Успешное создание пользователя", status: HttpStatus.OK })
   @UseInterceptors(FilesInterceptor("images"))
-  @PublicRoute()
+  @WithoutAuth()
   @Post("/registration")
   async registration(
     @Body() authRegistrationDto: AuthRegistrationDto,
@@ -47,7 +48,7 @@ export class AuthController {
       images,
     });
 
-    response.cookie("Authorization", `Bearer ${token}`, { httpOnly: true });
+    response.cookie("Authorization", toBearerToken(token), { httpOnly: true });
 
     return user;
   }

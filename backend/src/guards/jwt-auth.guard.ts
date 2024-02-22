@@ -1,14 +1,16 @@
+import assertSessionValidate from "@database/auth/asserts/assertSessionValidate";
+import assertUserValidate from "@database/auth/asserts/assertUserValidate";
 import { AuthService } from "@database/auth/auth.service";
+import { UnauthorizedException } from "@exceptions/unauthorized.exception";
 import { ExecutionContext, Injectable, SetMetadata } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
-import { UnauthorizedException } from "src/exceptions/unauthorized.exception";
+import { toBearerToken } from "src/utils/toBearerToken";
 
-const PUBLIC_ROUTE_KEY = "public-route";
+import { MetadataKey } from "./metadataKey";
 
-export const PublicRoute = () => SetMetadata(PUBLIC_ROUTE_KEY, true);
+export const WithoutAuth = () => SetMetadata(MetadataKey.PublicRoute, true);
 
-// TODO: добавить зависимость от ролей
 // TODO: добавить зависимость от id пользователя
 
 @Injectable()
@@ -23,8 +25,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
   canActivate = async (context: ExecutionContext): Promise<boolean> => {
     const { headers, method } = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
-
-    const isPublicRoute = this.reflector.get<boolean>(PUBLIC_ROUTE_KEY, context.getHandler());
+    const isPublicRoute = this.reflector.get<boolean>(MetadataKey.PublicRoute, context.getHandler());
 
     if (isPublicRoute) {
       // || method === "GET") {
@@ -33,14 +34,12 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
 
     const [bearer, oldAccessToken] = headers.authorization?.split(" ") || [];
 
-    if (!bearer) {
-      return false;
-    }
+    assertSessionValidate(bearer === "Bearer");
 
     const device = headers["user-agent"];
     const token = await this.authService.validateSession({ accessToken: oldAccessToken, device });
 
-    token !== oldAccessToken && response.cookie("Authorization", `Bearer ${token}`, { httpOnly: true });
+    token !== oldAccessToken && response.cookie("Authorization", toBearerToken(token), { httpOnly: true });
 
     return true;
   };

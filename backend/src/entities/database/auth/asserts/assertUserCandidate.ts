@@ -1,4 +1,4 @@
-import { UserExists } from "src/exceptions/user-exists.exception";
+import { UserExists } from "@exceptions/user-exists.exception";
 
 class UserCandidate {}
 
