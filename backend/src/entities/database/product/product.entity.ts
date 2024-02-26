@@ -1,4 +1,5 @@
 import { IsArray, IsBoolean, IsNumber, IsString } from "@constraints";
+import { Review } from "@database/review/review.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { TransformBoolean, TransformJSON, TransformNumber } from "@transform";
 import { SoftDeleteEntity } from "@utility/soft-delete/soft-delete.entity";
@@ -70,12 +71,6 @@ export class Product extends SoftDeleteEntity {
   @TransformNumber()
   price: number;
 
-  @ApiProperty({ description: "Отзывы", example: 20 })
-  @IsNumber()
-  @Column({ default: 0 })
-  @TransformNumber()
-  reviews: number;
-
   @ApiProperty({ description: "Продано количество раз", example: 50 })
   @IsNumber()
   @Column({ default: 0 })
@@ -86,4 +81,7 @@ export class Product extends SoftDeleteEntity {
   @IsString()
   @Column()
   title: string;
+
+  @OneToMany(() => Review, (review) => review.product)
+  reviews: Review[];
 }

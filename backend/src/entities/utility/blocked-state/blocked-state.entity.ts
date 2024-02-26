@@ -5,7 +5,7 @@ import { BeforeInsert, BeforeUpdate, Column, Entity } from "typeorm";
 import { BaseEntity } from "../base/base.entity";
 
 @Entity()
-// при изменении поправить user.entity.ts
+// при изменении поправить user.entity.ts, review.entity.ts
 export class BlockedStateEntity extends BaseEntity {
   @ApiProperty({ description: "Дата блокировки", example: "Mon, 05 Feb 2024 12:23:37 GMT" })
   @Column({ nullable: true, select: false, type: "timestamp" })

@@ -1,5 +1,8 @@
+import { AuthModule } from "@database/auth/auth.module";
 import { ProductModule } from "@database/product/product.module";
 import { ProductImageModule } from "@database/product-image/product-image.module";
+import { ReviewModule } from "@database/review/review.module";
+import { ReviewImageModule } from "@database/review-image/review-image.module";
 import { RoleModule } from "@database/role/role.module";
 import { UserModule } from "@database/user/user.module";
 import { UserImageModule } from "@database/user-image/user-image.module";
@@ -9,8 +12,6 @@ import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import * as path from "path";
-
-import { AuthModule } from "./entities/database/auth/auth.module";
 
 @Module({
   controllers: [],
@@ -40,6 +41,8 @@ import { AuthModule } from "./entities/database/auth/auth.module";
     UserImageModule,
     ProductModule,
     ProductImageModule,
+    ReviewModule,
+    ReviewImageModule,
   ],
   providers: [],
 })

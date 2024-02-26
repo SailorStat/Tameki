@@ -1,5 +1,6 @@
 import { IsEmail, IsString, Length } from "@constraints";
 import { Auth } from "@database/auth/auth.entity";
+import { Review } from "@database/review/review.entity";
 import { Role } from "@database/role/role.entity";
 import { UserImage } from "@database/user-image/user-image.entity";
 import { ApiProperty } from "@nestjs/swagger";
@@ -95,7 +96,8 @@ export class User extends SoftDeleteEntity {
   @JoinTable({ name: "user_roles" })
   roles: Role[];
 
-  // TODO: Добавить отношение для отзывов
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
 
   // TODO: Добавить поле для списка покупок
 }

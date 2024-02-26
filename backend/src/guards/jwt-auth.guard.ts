@@ -1,5 +1,4 @@
 import assertSessionValidate from "@database/auth/asserts/assertSessionValidate";
-import assertUserValidate from "@database/auth/asserts/assertUserValidate";
 import { AuthService } from "@database/auth/auth.service";
 import { UnauthorizedException } from "@exceptions/unauthorized.exception";
 import { ExecutionContext, Injectable, SetMetadata } from "@nestjs/common";
@@ -27,8 +26,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
     const response = context.switchToHttp().getResponse();
     const isPublicRoute = this.reflector.get<boolean>(MetadataKey.PublicRoute, context.getHandler());
 
-    if (isPublicRoute) {
-      // || method === "GET") {
+    if (isPublicRoute || method === "GET") {
       return true;
     }
 
