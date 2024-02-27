@@ -14,6 +14,7 @@ export class ProductImage extends Image {
   @Column()
   productId: number;
 
+  @ApiProperty({ description: "Продукт, которому принадлежит изображение", type: () => Product })
   @ManyToOne(() => Product, (product) => product.images)
   product: Product;
 }

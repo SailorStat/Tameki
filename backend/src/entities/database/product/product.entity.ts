@@ -82,6 +82,7 @@ export class Product extends SoftDeleteEntity {
   @Column()
   title: string;
 
+  @ApiProperty({ description: "Авторизованный пользователь", type: () => [Review] })
   @OneToMany(() => Review, (review) => review.product)
   reviews: Review[];
 }

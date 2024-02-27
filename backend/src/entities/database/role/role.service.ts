@@ -30,7 +30,7 @@ export class RoleService extends BaseService<Role, RoleGetDto, RoleGetAllDto, Ro
   async getByName(roleName: RoleNames): Promise<Role> {
     const queryBuilder = await this.repository
       .createQueryBuilder(this.entityName)
-      .where("role.name = :roleName", { roleName });
+      .where(`${this.entityName}.name = :roleName`, { roleName });
 
     const entity = await queryBuilder.getOne();
 

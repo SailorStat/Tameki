@@ -1,5 +1,6 @@
 import { IsString } from "@constraints";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsOptional } from "class-validator";
 import { BeforeInsert, BeforeUpdate, Column, Entity } from "typeorm";
 
 import { BaseEntity } from "../base/base.entity";
@@ -13,6 +14,7 @@ export class BlockedStateEntity extends BaseEntity {
 
   @ApiProperty({ description: "Причина блокировки", example: "Множественные оскорбления" })
   @IsString()
+  @IsOptional()
   @Column({ nullable: true, select: false, type: "varchar" })
   blockedReason?: string;
 

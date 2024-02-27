@@ -14,6 +14,7 @@ export class UserImage extends Image {
   @Column()
   userId: number;
 
+  @ApiProperty({ description: "Пользователь, которому принадлежит изображение", type: () => User })
   @ManyToOne(() => User, (user) => user.images)
   user: User;
 }

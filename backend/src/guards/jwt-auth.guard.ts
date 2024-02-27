@@ -10,7 +10,7 @@ import { MetadataKey } from "./metadataKey";
 
 export const WithoutAuth = () => SetMetadata(MetadataKey.PublicRoute, true);
 
-// TODO: добавить зависимость от id пользователя
+export const AddUserId = () => SetMetadata(MetadataKey.AddUserId, true);
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard("jwt") {
@@ -22,11 +22,13 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
   }
 
   canActivate = async (context: ExecutionContext): Promise<boolean> => {
-    const { headers, method } = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest();
+    const { headers, method } = request;
     const response = context.switchToHttp().getResponse();
     const isPublicRoute = this.reflector.get<boolean>(MetadataKey.PublicRoute, context.getHandler());
+    const needAddUserId = this.reflector.get<boolean>(MetadataKey.AddUserId, context.getHandler());
 
-    if (isPublicRoute || method === "GET") {
+    if (!needAddUserId && (isPublicRoute || method === "GET")) {
       return true;
     }
 
@@ -35,9 +37,10 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
     assertSessionValidate(bearer === "Bearer");
 
     const device = headers["user-agent"];
-    const token = await this.authService.validateSession({ accessToken: oldAccessToken, device });
+    const { accessToken, user } = await this.authService.validateSession({ accessToken: oldAccessToken, device });
 
-    token !== oldAccessToken && response.cookie("Authorization", toBearerToken(token), { httpOnly: true });
+    needAddUserId && (request.userId = user.id);
+    accessToken !== oldAccessToken && response.cookie("Authorization", toBearerToken(accessToken), { httpOnly: true });
 
     return true;
   };

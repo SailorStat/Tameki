@@ -14,6 +14,7 @@ export class ReviewImage extends Image {
   @Column()
   reviewId: number;
 
+  @ApiProperty({ description: "Отзыв, которому принадлежит изображение", type: () => Review })
   @ManyToOne(() => Review, (review) => review.images)
   review: Review;
 }

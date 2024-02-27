@@ -1,6 +1,7 @@
 import { IsEmail, IsString, Length } from "@constraints";
 import { Auth } from "@database/auth/auth.entity";
 import { Review } from "@database/review/review.entity";
+import { ReviewVoteState } from "@database/review-vote-state/review-vote-state.entity";
 import { Role } from "@database/role/role.entity";
 import { UserImage } from "@database/user-image/user-image.entity";
 import { ApiProperty } from "@nestjs/swagger";
@@ -17,6 +18,7 @@ export class User extends SoftDeleteEntity {
 
   @ApiProperty({ description: "Причина блокировки", example: "Множественные оскорбления" })
   @IsString()
+  @IsOptional()
   @Column({ nullable: true, select: false, type: "varchar" })
   blockedReason?: string;
 
@@ -96,8 +98,13 @@ export class User extends SoftDeleteEntity {
   @JoinTable({ name: "user_roles" })
   roles: Role[];
 
+  @ApiProperty({ description: "Отзывы пользователя", type: () => [Review] })
   @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
+
+  @ApiProperty({ description: "Состояния оценки отзывов", type: () => [ReviewVoteState] })
+  @OneToMany(() => ReviewVoteState, (vote) => vote.user)
+  reviewVotes: ReviewVoteState[];
 
   // TODO: Добавить поле для списка покупок
 }

@@ -11,7 +11,7 @@ import { Repository, SelectQueryBuilder } from "typeorm";
 
 import ProductCreateDto from "./dto/create-product.dto";
 import ProductGetAllDto from "./dto/get-all-products.dto";
-import ProductGetDto from "./dto/get-product..dto";
+import ProductGetDto from "./dto/get-product.dto";
 import ProductUpdateDto from "./dto/update-product.dto";
 import { Product } from "./product.entity";
 

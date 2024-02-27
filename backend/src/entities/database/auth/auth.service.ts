@@ -1,3 +1,4 @@
+import { User } from "@database/user/user.entity";
 import { UserService } from "@database/user/user.service";
 import { RoleOptions } from "@guards/role.guard";
 import { Inject, Injectable } from "@nestjs/common";
@@ -34,34 +35,38 @@ export class AuthService {
     return savedAuthSession.accessToken;
   };
 
-  protected getUserSessionByAccessToken = async (accessToken: string, options?: { searchRoles?: boolean }) => {
+  getUserSessionByAccessToken = async (accessToken: string, options?: { searchRoles?: boolean }) => {
     const queryBuilder = this.authRepository
       .createQueryBuilder(this.entityName)
       .leftJoinAndSelect(`${this.entityName}.user`, this.userService.entityName);
 
     options?.searchRoles && queryBuilder.leftJoinAndSelect(`${this.userService.entityName}.roles`, "role");
 
-    const authSession = queryBuilder.where(`${this.entityName}.accessToken = :accessToken`, { accessToken }).getOne();
+    const authSession = await queryBuilder
+      .where(`${this.entityName}.accessToken = :accessToken`, { accessToken })
+      .getOne();
 
     assertSessionValidate(!!authSession);
 
     return authSession;
   };
 
-  validateSession = async (authSessionDto: AuthValidateSessionDto): Promise<string> => {
+  validateSession = async (authSessionDto: AuthValidateSessionDto): Promise<{ accessToken: string; user: User }> => {
     const authSession = await this.getUserSessionByAccessToken(authSessionDto.accessToken);
 
     assertSessionValidate(isDateWithinDays(authSession.createdAt, 7));
 
+    const result = { accessToken: authSessionDto.accessToken, user: authSession.user };
+
     if (!isDateWithinDays(authSession.createdAt, 1)) {
-      return this.generateToken({
+      result.accessToken = await this.generateToken({
         device: authSessionDto.device,
         previousRefreshToken: authSession.refreshToken,
         user: authSession.user,
       });
     }
 
-    return authSessionDto.accessToken;
+    return result;
   };
 
   validateUser = async (authLoginDto: AuthLoginDto) => {

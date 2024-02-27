@@ -3,6 +3,7 @@ import { ProductModule } from "@database/product/product.module";
 import { ProductImageModule } from "@database/product-image/product-image.module";
 import { ReviewModule } from "@database/review/review.module";
 import { ReviewImageModule } from "@database/review-image/review-image.module";
+import { ReviewVoteStateModule } from "@database/review-vote-state/review-vote-state.module";
 import { RoleModule } from "@database/role/role.module";
 import { UserModule } from "@database/user/user.module";
 import { UserImageModule } from "@database/user-image/user-image.module";
@@ -43,6 +44,7 @@ import * as path from "path";
     ProductImageModule,
     ReviewModule,
     ReviewImageModule,
+    ReviewVoteStateModule,
   ],
   providers: [],
 })

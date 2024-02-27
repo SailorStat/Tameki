@@ -19,7 +19,7 @@ import { SoftDeleteDeleteDto } from "@utility/soft-delete/dto/delete-soft-delete
 import ProductCreateDto from "./dto/create-product.dto";
 import ProductGetAllDto from "./dto/get-all-products.dto";
 import ProductGetByParamsDto from "./dto/get-by-params-product.dto";
-import ProductGetDto from "./dto/get-product..dto";
+import ProductGetDto from "./dto/get-product.dto";
 import ProductUpdateDto from "./dto/update-product.dto";
 import { PRODUCT_BASE_URL, URL_PRODUCT_ID_PARAM } from "./product.constants";
 import { Product } from "./product.entity";

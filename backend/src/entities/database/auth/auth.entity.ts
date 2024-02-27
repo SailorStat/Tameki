@@ -22,6 +22,7 @@ export class Auth extends BaseEntity {
   @Column()
   device: string;
 
+  @ApiProperty({ description: "Авторизованный пользователь", type: () => User })
   @ManyToOne(() => User, (user) => user.authorizations)
   user: User;
 
