@@ -1,22 +1,18 @@
-import { AuthService } from "@database/auth/auth.service";
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { VoteStateService } from "@utility/vote-state/vote-state.service";
 import { Repository } from "typeorm";
 
 import ReviewVoteGetGroupsCountDto from "./dto/get-groups-count-review-vote-state.dto";
-import ReviewVoteStateVoteDto from "./dto/vote-review-vote-state.dto";
+import { ReviewVoteStateVoteServiceParams } from "./dto/vote-review-vote-state.dto";
 import { ReviewVoteGetGroupsCountResult } from "./get-groups-count-result-review-vote-state.types";
 import { ReviewVoteState } from "./review-vote-state.entity";
 
 @Injectable()
 export class ReviewVoteStateService extends VoteStateService<ReviewVoteState> {
-  readonly entityName: string = "review_vote";
+  readonly entityName: string = "review_vote_state";
 
-  constructor(
-    @InjectRepository(ReviewVoteState) protected readonly repository: Repository<ReviewVoteState>,
-    @Inject(AuthService) protected readonly authService: AuthService,
-  ) {
+  constructor(@InjectRepository(ReviewVoteState) protected readonly repository: Repository<ReviewVoteState>) {
     super(repository);
   }
 
@@ -30,20 +26,17 @@ export class ReviewVoteStateService extends VoteStateService<ReviewVoteState> {
       .where(`${this.entityName}.reviewId = :reviewId`, { reviewId })
       .getRawOne();
 
-    return { dislikes: parseInt(result.dislikes) ?? 0, likes: parseInt(result.likes) ?? 0 };
+    return { dislikes: +result.dislikes, likes: +result.likes };
   };
 
-  vote = async ({ vote, accessToken, reviewId }: ReviewVoteStateVoteDto) => {
-    const { user } = await this.authService.getUserSessionByAccessToken(accessToken);
-
+  vote = async ({ vote, reviewId, userId }: ReviewVoteStateVoteServiceParams) => {
     let reviewVote = await this.repository
       .createQueryBuilder(this.entityName)
       .where(`${this.entityName}.reviewId = :reviewId`, { reviewId })
-      .andWhere(`${this.entityName}.userId = :userId`, { userId: user.id })
+      .andWhere(`${this.entityName}.userId = :userId`, { userId })
       .getOne();
 
-    reviewVote ??= this.repository.create({ reviewId, userId: user.id, vote });
-
+    reviewVote ??= this.repository.create({ reviewId, userId, vote });
     reviewVote.vote = vote;
 
     return this.repository.save(reviewVote);

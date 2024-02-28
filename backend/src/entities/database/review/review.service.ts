@@ -1,6 +1,6 @@
-import { AuthService } from "@database/auth/auth.service";
 import { ReviewImageService } from "@database/review-image/review-image.service";
-import { Inject, Injectable } from "@nestjs/common";
+import { ReviewVoteStateService } from "@database/review-vote-state/review-vote-state.service";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "@utility/base/base.service";
 import { BlockedStateService } from "@utility/blocked-state/blocked-state.service";
@@ -8,13 +8,19 @@ import { BlockedStateBlockDto } from "@utility/blocked-state/dto/block-blocked-s
 import { assertFoundEntity } from "src/asserts/http.assert";
 import { Repository, SelectQueryBuilder } from "typeorm";
 
-import ReviewCreateDto, { ReviewServiceCreateDto } from "./dto/create-review.dto";
+import { ReviewCreateServiceParams } from "./dto/create-review.dto";
 import ReviewGetAllDto from "./dto/get-all-reviews.dto";
 import ReviewGetDto from "./dto/get-review.dto";
 import { Review } from "./review.entity";
 
 @Injectable()
-export class ReviewService extends BaseService<Review, ReviewGetDto, ReviewGetAllDto, ReviewCreateDto, object> {
+export class ReviewService extends BaseService<
+  Review,
+  ReviewGetDto,
+  ReviewGetAllDto,
+  ReviewCreateServiceParams,
+  object
+> {
   readonly entityName: string = "review";
 
   blockedStateService: BlockedStateService<Review>;
@@ -22,7 +28,7 @@ export class ReviewService extends BaseService<Review, ReviewGetDto, ReviewGetAl
   constructor(
     @InjectRepository(Review) protected readonly repository: Repository<Review>,
     protected readonly reviewImageService: ReviewImageService,
-    @Inject(AuthService) protected readonly authService: AuthService,
+    protected readonly reviewVoteStateService: ReviewVoteStateService,
   ) {
     super(repository);
     this.blockedStateService = new BlockedStateService(repository, this.entityName);
@@ -31,8 +37,23 @@ export class ReviewService extends BaseService<Review, ReviewGetDto, ReviewGetAl
   protected getReviewModify = (
     queryBuilder: SelectQueryBuilder<Review>,
     _?: ReviewGetDto,
-  ): SelectQueryBuilder<Review> =>
-    queryBuilder.leftJoinAndSelect(`${this.entityName}.images`, this.reviewImageService.entityName);
+  ): SelectQueryBuilder<Review> => {
+    queryBuilder
+      .loadRelationCountAndMap(
+        `${this.entityName}.likes`,
+        `${this.entityName}.votes`,
+        this.reviewVoteStateService.entityName,
+        (qb) => qb.andWhere(`${this.reviewVoteStateService.entityName}.vote = :vote`, { vote: true }),
+      )
+      .loadRelationCountAndMap(
+        `${this.entityName}.dislikes`,
+        `${this.entityName}.votes`,
+        this.reviewVoteStateService.entityName,
+        (qb) => qb.andWhere(`${this.reviewVoteStateService.entityName}.vote = :vote`, { vote: false }),
+      );
+
+    return queryBuilder.leftJoinAndSelect(`${this.entityName}.images`, this.reviewImageService.entityName);
+  };
 
   protected getWhereParams = (params: object): Partial<Review> => {
     const reviewWhere = this.repository.create(params);
@@ -84,25 +105,19 @@ export class ReviewService extends BaseService<Review, ReviewGetDto, ReviewGetAl
     return review;
   };
 
-  create = async ({ images, ...createDto }: ReviewServiceCreateDto) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const toCreateEntity = this.repository.create(createDto as any);
-
-    console.log(createDto);
-
+  create = async ({ images, ...createDto }: ReviewCreateServiceParams) => {
+    const toCreateEntity = this.repository.create(createDto);
     const createdReview = await this.repository.save(toCreateEntity);
 
     await Promise.allSettled(
       images.map(async (image) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        await this.reviewImageService.save(image, (createdReview as any).id);
+        await this.reviewImageService.save(image, createdReview.id);
       }),
     );
 
     const queryBuilder = this.repository
       .createQueryBuilder(this.entityName)
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      .where(`${this.entityName}.id = :reviewId`, { reviewId: (createdReview as any).id });
+      .where(`${this.entityName}.id = :reviewId`, { reviewId: createdReview.id });
 
     return this.getReviewModify(queryBuilder).getOne();
   };

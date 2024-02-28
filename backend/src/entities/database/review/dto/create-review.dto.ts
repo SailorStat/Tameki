@@ -2,7 +2,7 @@ import { ApiProperty, IntersectionType, PickType } from "@nestjs/swagger";
 
 import { Review } from "../review.entity";
 
-export default class ReviewCreateDto extends IntersectionType(PickType(Review, ["text", "rating", "productId"])) {
+export class ReviewCreateDto extends IntersectionType(PickType(Review, ["text", "rating", "productId"])) {
   @ApiProperty({
     description: "Изображения к отзыву",
     items: { format: "binary", type: "string" },
@@ -10,8 +10,8 @@ export default class ReviewCreateDto extends IntersectionType(PickType(Review, [
     type: "array",
   })
   images: Express.Multer.File[];
-
-  userId: number;
 }
 
-export class ReviewServiceCreateDto extends ReviewCreateDto {}
+export interface ReviewCreateServiceParams extends ReviewCreateDto {
+  userId: number;
+}

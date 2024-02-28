@@ -4,6 +4,7 @@ import { UnauthorizedException } from "@exceptions/unauthorized.exception";
 import { ExecutionContext, Injectable, SetMetadata } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
+import { Request } from "express";
 import { toBearerToken } from "src/utils/toBearerToken";
 
 import { MetadataKey } from "./metadataKey";
@@ -11,6 +12,10 @@ import { MetadataKey } from "./metadataKey";
 export const WithoutAuth = () => SetMetadata(MetadataKey.PublicRoute, true);
 
 export const AddUserId = () => SetMetadata(MetadataKey.AddUserId, true);
+
+export interface RequestWithUserId extends Request {
+  userId: number;
+}
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard("jwt") {

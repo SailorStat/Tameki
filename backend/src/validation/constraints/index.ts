@@ -8,3 +8,4 @@ export * from "./isNumber";
 export * from "./isString";
 export * from "./isUUID";
 export * from "./length";
+export * from "./minMax";

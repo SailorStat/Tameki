@@ -21,6 +21,7 @@ async function bootstrap() {
     .setTitle("Sailor Friends API")
     .setDescription("Документация для API маркетплейса Sailor Friends")
     .setVersion("0.0.1")
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

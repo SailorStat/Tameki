@@ -1,9 +1,9 @@
+import { AddUserId, RequestWithUserId } from "@guards/jwt-auth.guard";
 import { Body, Controller, Get, HttpStatus, Post, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
 
 import ReviewVoteGetGroupCountDto from "./dto/get-groups-count-review-vote-state.dto";
-import ReviewVoteStateVoteDto from "./dto/vote-review-vote-state.dto";
+import { ReviewVoteStateVoteDto } from "./dto/vote-review-vote-state.dto";
 import { ReviewVoteGetGroupsCountResult } from "./get-groups-count-result-review-vote-state.types";
 import { REVIEW_VOTE_BASE_URL } from "./review-vote-state.constants";
 import { ReviewVoteStateService } from "./review-vote-state.service";
@@ -29,14 +29,14 @@ export class ReviewVoteStateController {
     return reviewVotes;
   }
 
-  @ApiOperation({ description: "Изменить оценку к отзыву", summary: "Изменить оценку к отзыву" })
+  @ApiOperation({ description: "Поставить оценку к отзыву", summary: "Поставить оценку к отзыву" })
   @ApiResponse({ description: "Успешное изменение оценки к отзыву", status: HttpStatus.OK })
+  @AddUserId()
   @Post()
-  async vote(@Body() voteDto: Omit<ReviewVoteStateVoteDto, "accessToken">, @Req() request: Request) {
-    const reviewVote = await this.reviewVoteStateService.vote({
-      ...voteDto,
-      accessToken: request.headers.authorization,
-    });
+  async vote(@Body() voteDto: ReviewVoteStateVoteDto, @Req() { userId }: RequestWithUserId) {
+    console.log("voteDto: ", voteDto);
+
+    const reviewVote = await this.reviewVoteStateService.vote({ ...voteDto, userId });
 
     return reviewVote;
   }

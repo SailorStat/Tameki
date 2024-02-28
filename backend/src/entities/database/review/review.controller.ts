@@ -1,4 +1,4 @@
-import { AddUserId } from "@guards/jwt-auth.guard";
+import { AddUserId, RequestWithUserId } from "@guards/jwt-auth.guard";
 import {
   Body,
   Controller,
@@ -18,7 +18,7 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { BlockedStateBlockDto } from "@utility/blocked-state/dto/block-blocked-state.dto";
 import { SoftDeleteDeleteDto } from "@utility/soft-delete/dto/delete-soft-delete.dto";
 
-import ReviewCreateDto from "./dto/create-review.dto";
+import { ReviewCreateDto } from "./dto/create-review.dto";
 import ReviewGetAllDto from "./dto/get-all-reviews.dto";
 import ReviewGetByParamsDto from "./dto/get-by-params-review.dto";
 import ReviewGetDto from "./dto/get-review.dto";
@@ -45,11 +45,7 @@ export class ReviewController {
   @UseInterceptors(FilesInterceptor("images"))
   @AddUserId()
   @Post()
-  async create(
-    @Body() createDto: ReviewCreateDto,
-    @UploadedFiles() images = [],
-    @Req() { userId }: { userId: number },
-  ) {
+  async create(@Body() createDto: ReviewCreateDto, @UploadedFiles() images = [], @Req() { userId }: RequestWithUserId) {
     const review = await this.reviewService.create({ ...createDto, images, userId });
 
     return review;

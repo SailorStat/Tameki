@@ -1,12 +1,16 @@
-import { IsNumber } from "@constraints";
+import { IsBoolean, IsNumber } from "@constraints";
 import { ApiProperty } from "@nestjs/swagger";
-import { TransformNumber } from "@transform";
+import { TransformBoolean, TransformNumber } from "@transform";
 import { BaseEntity } from "@utility/base/base.entity";
+import { IsOptional } from "class-validator";
 import { Column, Entity } from "typeorm";
 
 @Entity()
 export class VoteState extends BaseEntity {
-  @ApiProperty({ description: "Оценка пользователя", example: 1234 })
+  @ApiProperty({ description: "Оценка пользователя", example: true })
+  @IsBoolean()
+  @IsOptional()
+  @TransformBoolean()
   @Column({ nullable: true })
   vote?: boolean;
 

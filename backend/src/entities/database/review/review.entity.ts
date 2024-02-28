@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from "@constraints";
+import { IsNumber, IsString, MinMax } from "@constraints";
 import { Product } from "@database/product/product.entity";
 import { ReviewImage } from "@database/review-image/review-image.entity";
 import { ReviewVoteState } from "@database/review-vote-state/review-vote-state.entity";
@@ -19,9 +19,10 @@ export class Review extends BlockedStateEntity {
   @OneToMany(() => ReviewImage, (image) => image.review)
   images: ReviewImage[];
 
-  @ApiProperty({ description: "Оценка отзыва", example: 100 })
+  @ApiProperty({ description: "Оценка продукта от 1 до 100", example: 100 })
   @IsNumber()
   @TransformNumber()
+  @MinMax({ max: 100, min: 1 })
   @Column({ type: "int" })
   rating: number;
 
