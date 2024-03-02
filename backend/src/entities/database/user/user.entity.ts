@@ -1,5 +1,6 @@
 import { IsEmail, IsString, Length } from "@constraints";
 import { Auth } from "@database/auth/auth.entity";
+import { Purchase } from "@database/purchase/purchase.entity";
 import { Review } from "@database/review/review.entity";
 import { ReviewVoteState } from "@database/review-vote-state/review-vote-state.entity";
 import { Role } from "@database/role/role.entity";
@@ -105,6 +106,14 @@ export class User extends SoftDeleteEntity {
   @ApiProperty({ description: "Состояния оценки отзывов", type: () => [ReviewVoteState] })
   @OneToMany(() => ReviewVoteState, (vote) => vote.user)
   reviewVotes: ReviewVoteState[];
+
+  @ApiProperty({ description: "Заказы покупателя", type: () => [Purchase] })
+  @OneToMany(() => Purchase, (purchase) => purchase.buyerUser)
+  buyerPurchases: Purchase[];
+
+  @ApiProperty({ description: "Заказы продавца", type: () => [Purchase] })
+  @OneToMany(() => Purchase, (vote) => vote.sellerUser)
+  sellerPurchases: Purchase[];
 
   // TODO: Добавить поле для списка покупок
 }

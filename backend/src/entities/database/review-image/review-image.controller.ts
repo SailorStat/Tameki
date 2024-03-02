@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Query } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import GetAllReviewImageDto from "./dto/get-all-review-image.dto";
-import UpdateReviewImageDto from "./dto/update-review-image.dto";
+import { GetAllReviewImageDto } from "./dto/get-all-review-image.dto";
+import { UpdateReviewImageDto } from "./dto/update-review-image.dto";
 import { REVIEW_IMAGE_BASE_URL, URL_REVIEW_IMAGE_ID_PARAM } from "./review-image.constants";
 import { ReviewImage } from "./review-image.entity";
 import { ReviewImageService } from "./review-image.service";

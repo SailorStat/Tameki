@@ -1,4 +1,5 @@
 import { IsArray, IsBoolean, IsNumber, IsString } from "@constraints";
+import { Purchase } from "@database/purchase/purchase.entity";
 import { Review } from "@database/review/review.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { TransformBoolean, TransformJSON, TransformNumber } from "@transform";
@@ -85,4 +86,8 @@ export class Product extends SoftDeleteEntity {
   @ApiProperty({ description: "Авторизованный пользователь", type: () => [Review] })
   @OneToMany(() => Review, (review) => review.product)
   reviews: Review[];
+
+  @ApiProperty({ description: "Заказы товара", type: () => [Purchase] })
+  @OneToMany(() => Purchase, (vote) => vote.product)
+  purchases: Purchase[];
 }

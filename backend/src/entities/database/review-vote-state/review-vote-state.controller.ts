@@ -2,7 +2,7 @@ import { AddUserId, RequestWithUserId } from "@guards/jwt-auth.guard";
 import { Body, Controller, Get, HttpStatus, Post, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import ReviewVoteGetGroupCountDto from "./dto/get-groups-count-review-vote-state.dto";
+import { ReviewVoteGetGroupCountDto } from "./dto/get-groups-count-review-vote-state.dto";
 import { ReviewVoteStateVoteDto } from "./dto/vote-review-vote-state.dto";
 import { ReviewVoteGetGroupsCountResult } from "./get-groups-count-result-review-vote-state.types";
 import { REVIEW_VOTE_BASE_URL } from "./review-vote-state.constants";

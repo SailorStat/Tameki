@@ -19,9 +19,9 @@ import { BlockedStateBlockDto } from "@utility/blocked-state/dto/block-blocked-s
 import { SoftDeleteDeleteDto } from "@utility/soft-delete/dto/delete-soft-delete.dto";
 
 import { ReviewCreateDto } from "./dto/create-review.dto";
-import ReviewGetAllDto from "./dto/get-all-reviews.dto";
-import ReviewGetByParamsDto from "./dto/get-by-params-review.dto";
-import ReviewGetDto from "./dto/get-review.dto";
+import { ReviewGetAllDto as ReviewGetAllDto } from "./dto/get-all-reviews.dto";
+import { ReviewGetByParamsDto } from "./dto/get-by-params-review.dto";
+import { ReviewGetDto } from "./dto/get-review.dto";
 import { REVIEW_BASE_URL, URL_REVIEW_ID_PARAM } from "./review.constants";
 import { Review } from "./review.entity";
 import { ReviewService } from "./review.service";

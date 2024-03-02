@@ -1,5 +1,5 @@
 import { PickType } from "@nestjs/swagger";
-import VoteStateVoteDto from "@utility/vote-state/dto/vote-vote-state.dto";
+import { VoteStateVoteDto } from "@utility/vote-state/dto/vote-vote-state.dto";
 
 import { ReviewVoteState } from "../review-vote-state.entity";
 

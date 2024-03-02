@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 
 import { FileService } from "../file/file.service";
 import { SaveFileReturnType } from "../file/file.types";
-import UpdateImageDto from "./dto/update-image.dto";
+import { UpdateImageDto } from "./dto/update-image.dto";
 import { Image } from "./image.entity";
 
 @Injectable()

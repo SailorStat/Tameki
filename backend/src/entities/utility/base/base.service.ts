@@ -103,7 +103,7 @@ export class BaseService<
     return this.getById(entityId);
   };
 
-  async delete(entityId: number, _: object) {
+  async delete(entityId: number, _?: object) {
     await this.getById(entityId);
     await this.repository.createQueryBuilder().softDelete().where("id = :entityId", { entityId }).execute();
 

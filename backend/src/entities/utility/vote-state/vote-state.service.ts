@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { BaseService } from "@utility/base/base.service";
 import { Repository } from "typeorm";
 
-import VoteStateVoteDto from "./dto/vote-vote-state.dto";
+import { VoteStateVoteDto } from "./dto/vote-vote-state.dto";
 import { VoteState } from "./vote-state.entity";
 
 @Injectable()

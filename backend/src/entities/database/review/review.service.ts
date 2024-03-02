@@ -9,8 +9,8 @@ import { assertFoundEntity } from "src/asserts/http.assert";
 import { Repository, SelectQueryBuilder } from "typeorm";
 
 import { ReviewCreateServiceParams } from "./dto/create-review.dto";
-import ReviewGetAllDto from "./dto/get-all-reviews.dto";
-import ReviewGetDto from "./dto/get-review.dto";
+import { ReviewGetAllDto } from "./dto/get-all-reviews.dto";
+import { ReviewGetDto } from "./dto/get-review.dto";
 import { Review } from "./review.entity";
 
 @Injectable()

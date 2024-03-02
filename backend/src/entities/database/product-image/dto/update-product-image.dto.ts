@@ -1,3 +1,3 @@
-import UpdateImageDto from "@utility/image/dto/update-image.dto";
+import { UpdateImageDto } from "@utility/image/dto/update-image.dto";
 
-export default class UpdateProductImageDto extends UpdateImageDto {}
+export class UpdateProductImageDto extends UpdateImageDto {}

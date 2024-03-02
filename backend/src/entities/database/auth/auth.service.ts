@@ -92,7 +92,7 @@ export class AuthService {
     }
 
     const userRoleNames = userRoles.map((userRole) => userRole.name);
-    const validRoles = await roleNames[requireEvery ? "every" : "some"]((roleName) => userRoleNames.includes(roleName));
+    const validRoles = roleNames[requireEvery ? "every" : "some"]((roleName) => userRoleNames.includes(roleName));
 
     assertUserRoles(validRoles);
 

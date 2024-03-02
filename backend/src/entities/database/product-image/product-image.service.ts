@@ -5,8 +5,8 @@ import { SaveFileReturnType } from "@utility/file/file.types";
 import { ImageService } from "@utility/image/image.service";
 import { Repository } from "typeorm";
 
-import GetAllProductImageDto from "./dto/get-all-product-image.dto";
-import UpdateProductImageDto from "./dto/update-product-image.dto";
+import { GetAllProductImageDto } from "./dto/get-all-product-image.dto";
+import { UpdateProductImageDto } from "./dto/update-product-image.dto";
 import { ProductImage } from "./product-image.entity";
 
 @Injectable()

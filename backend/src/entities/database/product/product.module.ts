@@ -1,4 +1,3 @@
-import { AuthModule } from "@database/auth/auth.module";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -9,7 +8,7 @@ import { ProductService } from "./product.service";
 
 @Module({
   controllers: [ProductController],
-  imports: [TypeOrmModule.forFeature([Product]), ProductImageModule, AuthModule],
+  imports: [TypeOrmModule.forFeature([Product]), ProductImageModule],
   providers: [ProductService],
 })
 export class ProductModule {}

@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Query } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import GetAllUserImageDto from "./dto/get-all-user-image.dto";
-import UpdateUserImageDto from "./dto/update-user-image.dto";
+import { GetAllUserImageDto } from "./dto/get-all-user-image.dto";
+import { UpdateUserImageDto } from "./dto/update-user-image.dto";
 import { URL_USER_IMAGE_ID_PARAM, USER_IMAGE_BASE_URL } from "./user-image.constants";
 import { UserImage } from "./user-image.entity";
 import { UserImageService } from "./user-image.service";

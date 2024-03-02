@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { VoteStateService } from "@utility/vote-state/vote-state.service";
 import { Repository } from "typeorm";
 
-import ReviewVoteGetGroupsCountDto from "./dto/get-groups-count-review-vote-state.dto";
+import { ReviewVoteGetGroupCountDto as ReviewVoteGetGroupsCountDto } from "./dto/get-groups-count-review-vote-state.dto";
 import { ReviewVoteStateVoteServiceParams } from "./dto/vote-review-vote-state.dto";
 import { ReviewVoteGetGroupsCountResult } from "./get-groups-count-result-review-vote-state.types";
 import { ReviewVoteState } from "./review-vote-state.entity";

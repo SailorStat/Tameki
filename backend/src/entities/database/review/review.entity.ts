@@ -1,12 +1,13 @@
 import { IsNumber, IsString, MinMax } from "@constraints";
 import { Product } from "@database/product/product.entity";
+import { Purchase } from "@database/purchase/purchase.entity";
 import { ReviewImage } from "@database/review-image/review-image.entity";
 import { ReviewVoteState } from "@database/review-vote-state/review-vote-state.entity";
 import { User } from "@database/user/user.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { TransformNumber } from "@transform";
 import { BlockedStateEntity } from "@utility/blocked-state/blocked-state.entity";
-import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from "typeorm";
 
 @Entity()
 export class Review extends BlockedStateEntity {
@@ -50,8 +51,7 @@ export class Review extends BlockedStateEntity {
   @OneToMany(() => ReviewVoteState, (vote) => vote.review)
   votes: ReviewVoteState;
 
-  // TODO: добавить связь с информацией о покупке
-  // @ApiProperty({ description: "Информация о покупке" })
-  // @ManyToOne(type => Purchase)
-  // purchase: Purchase;
+  @ApiProperty({ description: "Информация о покупке" })
+  @OneToOne(() => Purchase)
+  purchase: Purchase;
 }

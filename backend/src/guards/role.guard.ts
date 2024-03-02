@@ -30,6 +30,7 @@ export class RoleGuard extends AuthGuard("jwt") {
     if (!roleOptions) {
       return true;
     }
+    // todo: добавить проверку ролей, которые передаются в теле или параметрах запроса
 
     const [bearer, accessToken] = headers.authorization?.split(" ") || [];
 

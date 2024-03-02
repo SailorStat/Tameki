@@ -3,7 +3,7 @@ import { HiddenStateCreateDto } from "@utility/hidden-state/dto/create-hidden-st
 
 import { Product } from "../product.entity";
 
-export default class ProductCreateDto extends IntersectionType(
+export class ProductCreateDto extends IntersectionType(
   PickType(Product, ["article", "description", "inStock", "labels", "price", "title", "hiddenReason"]),
   HiddenStateCreateDto,
 ) {
