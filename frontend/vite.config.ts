@@ -9,7 +9,7 @@ export default defineConfig({
   },
   plugins: [tsconfigPaths(), react()],
   server: {
-    port: 1410,
+    port: 1411,
     proxy: {
       "/api": {
         changeOrigin: true,

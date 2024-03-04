@@ -3,7 +3,7 @@ export interface Product {
   description: string;
   estimation: number;
   favorites: boolean;
-  id: string;
+  id: number;
   images: string[];
   inStock: number;
   labels: string[];

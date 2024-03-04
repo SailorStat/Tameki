@@ -1,3 +1,4 @@
+export { default as createSlice } from "./createSlice";
 export { default as formatEstimation } from "./formatEstimation";
 export { default as formatPrice } from "./formatPrice";
 export { default as generateHexColor } from "./generateHexColor";

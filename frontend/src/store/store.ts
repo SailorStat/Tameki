@@ -3,6 +3,7 @@ import counterSlice from "@slices/counter";
 import primaryAdvertisementSlice from "@slices/primaryAdvertisement/primaryAdvertisementSlice";
 import productsSlice from "@slices/products";
 import shoppingListSlice from "@slices/shoppingList/shoppingListSlice";
+import userCreateSlice from "@slices/userCreate/slice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     primaryAdvertisement: primaryAdvertisementSlice.reducer,
     products: productsSlice.reducer,
     shoppingList: shoppingListSlice.reducer,
+    userCreate: userCreateSlice.reducer,
   },
 });
 
