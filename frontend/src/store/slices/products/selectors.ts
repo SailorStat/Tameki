@@ -10,6 +10,6 @@ const productSelector = createSelector(
   (productCollection, productId) => productCollection[productId]
 );
 
-const createProductSelector = (productId: string) => (state: RootState) => productSelector(state, productId);
+const createProductSelector = (productId: number) => (state: RootState) => productSelector(state, productId);
 
 export { productCollectionSelector, createProductSelector, productSelector };

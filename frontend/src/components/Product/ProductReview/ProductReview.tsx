@@ -2,7 +2,7 @@ import { useSelector } from "@hooks";
 import { Typography } from "@mui/material";
 import { createProductSelector } from "@slices/products";
 interface ProductReviewProps {
-  productId: string;
+  productId: number;
 }
 
 const ProductReview = ({ productId }: ProductReviewProps) => {

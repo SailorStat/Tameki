@@ -1,16 +1,17 @@
 import * as React from "react";
 import GiteIcon from "@mui/icons-material/Gite";
 import MenuIcon from "@mui/icons-material/Menu";
-import { AppBar as MuiAppBar, Button, IconButton, Stack, Toolbar } from "@mui/material";
+import { AppBar as MuiAppBar, IconButton, Stack, Toolbar } from "@mui/material";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
-import { Paths, PathVariable } from "@router";
+import { PathVariable } from "@router";
 import { useNavigate, useParams } from "react-router-dom";
 
 import AppBarButtons from "./AppBarButtons";
 import ShoppingListTrigger from "./ShoppingListTrigger";
+import User from "./User";
 
 const AppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<HTMLElement | null>(null);
@@ -46,7 +47,6 @@ const AppBar = () => {
               <AppBarButtons />
             </Menu>
           </Box>
-
           <Stack
             alignItems="center"
             direction="row"
@@ -66,14 +66,13 @@ const AppBar = () => {
           <Box sx={{ display: { md: "flex", xs: "none" }, flexGrow: 1 }}>
             <AppBarButtons />
           </Box>
-
-          <Box sx={{ flexGrow: 0 }}>
-            {shopId && (
-              <Stack direction="row" spacing={1}>
-                <ShoppingListTrigger shopPath={shopPath} />
-              </Stack>
-            )}
-          </Box>
+          <Box sx={{ flexGrow: 0 }} />
+          {shopId && (
+            <Stack direction="row" spacing={1}>
+              <ShoppingListTrigger shopPath={shopPath} />
+            </Stack>
+          )}
+          <User />
         </Toolbar>
       </Container>
     </MuiAppBar>

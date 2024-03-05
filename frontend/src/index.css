@@ -163,3 +163,7 @@ template {
 [hidden] {
   display: none;
 }
+
+.MuiDayCalendar-weekDayLabel, .MuiPickersCalendarHeader-label {
+  text-transform: capitalize;
+}

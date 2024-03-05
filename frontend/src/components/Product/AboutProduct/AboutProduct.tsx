@@ -11,7 +11,7 @@ import ProductLabels from "./ProductLabels";
 import ProductStatsInfo from "./ProductStatsInfo";
 
 interface AboutProductProps {
-  productId: string;
+  productId: number;
 }
 
 const AboutProduct = ({ productId }: AboutProductProps) => {

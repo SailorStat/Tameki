@@ -5,7 +5,7 @@ import { shoppingListProductSelectedSelector } from "@slices/shoppingList";
 import ToShoppingListButton from "./ToShoppingListButton";
 
 interface ToShoppingListProps {
-  productId: string;
+  productId: number;
 }
 
 const ToShoppingList = ({ productId }: ToShoppingListProps) => {

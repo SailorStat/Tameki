@@ -6,7 +6,7 @@ import { dispatchedShoppingListActions } from "@slices/shoppingList/actions";
 import { capitalize } from "lodash";
 
 interface ToShoppingListButtonProps {
-  productId: string;
+  productId: number;
 }
 
 const ToShoppingListButton = ({ productId }: ToShoppingListButtonProps) => {

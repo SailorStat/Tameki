@@ -5,7 +5,7 @@ import { shoppingListIsInOrderProductSelector } from "@slices/shoppingList";
 import { dispatchedShoppingListActions } from "@slices/shoppingList/actions";
 
 interface ShoppingProductToOrderCheckboxProps {
-  productId: string;
+  productId: number;
 }
 
 const ShoppingProductToOrderCheckbox = ({ productId }: ShoppingProductToOrderCheckboxProps) => {

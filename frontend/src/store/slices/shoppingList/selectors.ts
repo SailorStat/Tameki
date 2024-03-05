@@ -43,8 +43,8 @@ const shoppingListSelectedToOrderSelector = createSelector(
     reduce<Record<Product["id"], number>, Record<Product["id"], number>>(
       selectedCollection,
       (selectedCollection, selectedCount, productId) => {
-        if (toOrderCollection[productId]) {
-          selectedCollection[productId] = selectedCount;
+        if (toOrderCollection[+productId]) {
+          selectedCollection[+productId] = selectedCount;
         }
 
         return selectedCollection;

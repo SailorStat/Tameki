@@ -8,7 +8,7 @@ import { dispatchedProductActions } from "@slices/products/actions";
 export interface ToggleProductFavoriteProps
   extends Omit<CheckboxProps, "checked" | "checkedIcon" | "color" | "icon" | "id" | "onClick"> {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  productId: string;
+  productId: number;
 }
 
 const ToggleProductFavorite = ({ onClick, productId, ...props }: ToggleProductFavoriteProps) => {

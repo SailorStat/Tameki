@@ -9,6 +9,8 @@ const Paths = {
   getGreet: (shopPath: string) => `${shopPath}/greet`,
   getShoppingList: (shopPath: string) => `${shopPath}/shoppingList`,
   greet: `/:${PathVariable.ShopId}/greet`,
+  login: "/login",
+  registration: "/registration",
   shop: `/:${PathVariable.ShopId}`,
   shoppingList: `/:${PathVariable.ShopId}/shoppingList`,
   shops: "/shops",

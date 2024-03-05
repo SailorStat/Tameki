@@ -1,4 +1,6 @@
+import router, { Paths } from "@router";
 import { registration } from "@src/api/auth/auth.request";
+import { RootState } from "@src/store";
 import { createSlice } from "@utils";
 
 const initialState: {
@@ -43,24 +45,34 @@ const initialState: {
   loading: false,
 };
 
-const userCreateSlice = createSlice({
+const userSlice = createSlice({
   initialState,
-  name: "userCreate",
+  name: "user",
   reducers: (create) => ({
-    registration: create.asyncThunk(async (_, thunkApi) => {
-      const state = thunkApi.getState();
+    registration: create.asyncThunk(
+      async (_, thunkApi) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const state = thunkApi.getState() as RootState;
+        const user = await registration(state.registration.data);
 
-      try {
-        const todo = await registration(state);
-
-        return todo;
-      } catch (error) {
-        throw thunkApi.rejectWithValue({
-          error: error.message,
-        });
+        return user;
+      },
+      {
+        fulfilled: (_, __) => {
+          router.navigate(Paths.login);
+        },
+        pending: (state, _) => {
+          state.loading = true;
+        },
+        rejected: (state, action) => {
+          state.error = action.error.message ?? null;
+        },
+        settled: (state, _) => {
+          state.loading = false;
+        },
       }
-    }),
+    ),
   }),
 });
 
-export default userCreateSlice;
+export default userSlice;

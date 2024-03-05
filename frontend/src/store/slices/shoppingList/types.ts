@@ -2,7 +2,7 @@ import { Product } from "@src/store";
 
 export interface ToRemoveProduct {
   count: number;
-  productId: string;
+  productId: number;
 }
 
 export type ProductIdIsInOrderCollection = Record<Product["id"], boolean>;
