@@ -1,45 +1,34 @@
+import { PayloadAction } from "@reduxjs/toolkit";
 import router, { Paths } from "@router";
 import { registration } from "@src/api/auth/auth.request";
 import { RootState } from "@src/store/store";
 import { createSlice } from "@utils";
 
+export interface RegistrationData {
+  birthdayAt: number;
+  email: string;
+  firstname: string;
+  images: File[];
+  lastname: string;
+  nickname: string;
+  password: string;
+  passwordConfirm: string;
+}
+
 const initialState: {
-  data: {
-    // about: string | null;
-    // blockedAt: Date | null;
-    // blockedReason: string | null;
-    // email: string | null;
-    // firstname: string | null;
-    // googleUserId: string | null;
-    id: number | null;
-    // images: [];
-    // lastname: string | null;
-    // localization: string | null;
-    // nickname: string | null;
-    // reviewVotes: [];
-    // roles: RoleNames[];
-    // telegramUserId: string | null;
-    // vkUserId: string | null;
-  };
+  data: RegistrationData;
   error: string | null;
   loading: boolean;
 } = {
   data: {
-    // about: null,
-    // blockedAt: null,
-    // blockedReason: null,
-    // email: null,
-    // firstname: null,
-    // googleUserId: null,
-    id: null,
-    // images: [],
-    // lastname: null,
-    // localization: null,
-    // nickname: null,
-    // reviewVotes: [],
-    // roles: [],
-    // telegramUserId: null,
-    // vkUserId: null,
+    birthdayAt: Date.now(),
+    email: "",
+    firstname: "",
+    images: [],
+    lastname: "",
+    nickname: "",
+    password: "",
+    passwordConfirm: "",
   },
   error: null,
   loading: false,
@@ -72,6 +61,9 @@ const registrationSlice = createSlice({
         },
       }
     ),
+    setData: create.reducer((state, action: PayloadAction<Partial<RegistrationData>>) => {
+      state.data = { ...state.data, ...action.payload };
+    }),
   }),
 });
 
